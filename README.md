@@ -1,37 +1,11 @@
-## Welcome to GitHub Pages
+## Computer Vision Sandbox
 
-You can use the [editor on GitHub](https://github.com/m516/CV-Sandbox/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+All my personal, non-academic computer vision research lies here.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+I've written all my projects in C++ so far and build them with help from CMake, so I can practice using these standard tools to make fast, lightweight standalone applications that are relatively easy to integrate with hardware like GPUs and TPUs. Check out my setup at [docs/setup.md](docs/setup.md)
 
-### Markdown
+Here are all my projects so far:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/m516/CV-Sandbox/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+| Name | Description |
+|-----:|:------------|
+[HelloWorld](src/01-HelloWorld) | A basic project that shows an image via OpenCV
