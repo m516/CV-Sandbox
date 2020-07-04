@@ -8,4 +8,5 @@ Here are all my projects so far:
 
 | Name | Description |
 |-----:|:------------|
-[HelloWorld](src/01-HelloWorld) | A basic project that shows an image via OpenCV
+[Hello World](src/01-HelloWorld) | A basic project that loads with OpenCV and displays it in a window
+[Hello GLFW](src/02-HelloGLFW) | A basic project that creates a window and an OpenGL context with GLFW and GLAD

@@ -45,9 +45,27 @@ endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 add_compile_definitions(MEDIA_DIRECTORY="../media/")
 
 # Find packages used throughout this repository
+
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+# glfw
+add_subdirectory(extern/glfw)
+
+# opengl
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+
+# glew
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+
+# Dear IMGui
+add_subdirectory(extern/imgui)
+
+# GLAD
+find_package(glad CONFIG REQUIRED)
 
 # Include sub-projects.
 add_subdirectory ("src")
