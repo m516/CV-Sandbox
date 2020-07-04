@@ -1,5 +1,5 @@
 # Project 2: Hello GLFW
-This project demonstrates the use of GLFW to create a window with an OpenGL context
+This project demonstrates the use of GLFW to create a window with an OpenGL context in a [single C++ source code file.](src/02-HelloGLFW/main.cpp)
 
 ## Resources
 ### For Building
