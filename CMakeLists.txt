@@ -61,11 +61,12 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 
-# Dear IMGui
-add_subdirectory(extern/imgui)
-
 # GLAD
 find_package(glad CONFIG REQUIRED)
+
+# Dear IMGui
+add_subdirectory(extern/imgui)
+include_directories(extern)
 
 # Include sub-projects.
 add_subdirectory ("src")

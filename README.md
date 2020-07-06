@@ -6,7 +6,8 @@ So far, all my projects are written in C++. This allows me to practice using sta
 
 Here are all my projects so far:
 
-| Name | Description |
-|-----:|:------------|
-[Hello World](src/01-HelloWorld) | A basic project that loads with OpenCV and displays it in a window
-[Hello GLFW](src/02-HelloGLFW) | A basic project that creates a window and an OpenGL context with GLFW and GLAD
+|                              Name | Description                                                                                         |
+| --------------------------------: | :-------------------------------------------------------------------------------------------------- |
+| [Hello World](src/01-Hello-World) | A basic project that loads with OpenCV and displays it in a window                                  |
+|   [Hello GLFW](src/02-Hello-GLFW) | A basic project that creates a window and an OpenGL context with GLFW and GLAD                      |
+| [Hello ImGui](src/03-Hello-ImGui) | A basic project that uses the GLFW window created from project 02 to create a simple Gui with ImGui |
