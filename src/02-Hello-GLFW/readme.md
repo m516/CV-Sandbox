@@ -1,5 +1,12 @@
-# Project 2: Hello GLFW
+# Project 2: Hello GLFW <!-- omit in toc -->
 This project demonstrates the use of GLFW to create a window with an OpenGL context in a [single C++ source code file.](main.cpp)
+
+# Table of Contents <!-- omit in toc -->
+- [The Gist](#the-gist)
+- [Resources](#resources)
+	- [For Building](#for-building)
+	- [Examples](#examples)
+	- [Miscellaneous](#miscellaneous)
 
 ## The Gist
 This is the contents of the main.cpp file as of 7/3/2020
