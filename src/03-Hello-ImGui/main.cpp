@@ -126,7 +126,7 @@ int main()
 	//Window creation was successful. Continue
 	glfwMakeContextCurrent(window);
 
-	//glewInit();
+	glewInit();
 
 	// Setup ImGui binding
 	ImGui_ImplGlfwGL3_Init(window, true);
