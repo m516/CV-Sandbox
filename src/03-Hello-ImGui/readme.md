@@ -1,4 +1,4 @@
-# Project 3 Hello ImGui <!-- omit in toc -->
+# Project 3: Hello ImGui <!-- omit in toc -->
 This project demonstrates the use of GLFW to create a window with an OpenGL context in a [single C++ source code file.](main.cpp)
 
 # Table of Contents <!-- omit in toc -->
