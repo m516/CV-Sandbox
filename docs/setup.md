@@ -1,5 +1,5 @@
-# Setup
-## Introduction
+# Setup <!-- omit in toc -->
+## Introduction <!-- omit in toc -->
 
 This document describes my setup as of 6/21/2020.
 Note that links, procedures, and my setup may change significantly and I may not update this page often.
@@ -8,10 +8,10 @@ If this document is outdated, please don't heasitate to create a new [issue](htt
 
 ------------------------------
 
-## Table of Contents
-* [My Personal Setup](#My-Personal-Setup)
-* [Computer Vision Libraries I Use](#Computer-Vision-Libraries-I-Use)
-* [Installing OpenCV via `vcpkg`](#installing-opencv-via-vcpkg)
+## Table of Contents <!-- omit in toc -->
+- [My Personal Setup](#my-personal-setup)
+- [Computer Vision Libraries I Use](#computer-vision-libraries-i-use)
+- [Installing OpenCV via `vcpkg`](#installing-opencv-via-vcpkg)
 
 ------------------------------
 
