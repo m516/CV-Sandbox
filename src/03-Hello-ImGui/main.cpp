@@ -13,7 +13,7 @@
 
 using namespace std;
 
-
+GLFWwindow* window;
 
 /**
  * A helper function for terminating the program
@@ -89,6 +89,17 @@ void setStyle(){
 	style->WindowTitleAlign = ImVec2(1.0f, 0.5f);
 
 	style->DisplaySafeAreaPadding = ImVec2(4, 4);
+
+}
+
+void setGuiScale(float guiScale) {
+	int fbw, fbh, ww, wh;
+	glfwGetFramebufferSize(window, &fbw, &fbh);
+	glfwGetWindowSize(window, &ww, &wh);
+
+	float pixelRatio = fbw / ww;
+
+	ImGui::GetIO().FontGlobalScale = guiScale / pixelRatio;
 }
 
 int main()
@@ -112,7 +123,7 @@ int main()
 	glfwSetErrorCallback(error_callback);
 
 	//GLFW creates a window and its OpenGL context with the next function
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello window :)", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "Hello window :)", NULL, NULL);
 
 	//Check for errors (which would happen if creating a window fails
 	if (!window)
@@ -135,18 +146,24 @@ int main()
 	bool show_test_window = true;
 	bool show_another_window = false;
 	ImVec4 clear_color = ImColor(60, 55, 15);
+	float scale = 2.f;
 
 	//The render loop
 	while (!glfwWindowShouldClose(window))
 	{
 		ImGui_ImplGlfwGL3_NewFrame();
 
-		ImGui::SetNextWindowSize(ImVec2(320,240));
+		//ImGui::SetNextWindowSize(ImVec2(320,240));
 		ImGui::Begin("Another Window", &show_another_window);
 		ImGui::Text("Hello");
 		if (ImGui::Button("Push me", ImVec2(128, 32))) {
 			ImGui::Text("Ouch, not so hard!");
 		}
+
+		//Gui rendering size
+		ImGui::SliderFloat("Display scale", &scale, 1, 3);
+		setGuiScale(scale);
+
 		ImGui::End();
 
 		// Rendering
