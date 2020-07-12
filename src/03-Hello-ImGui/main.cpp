@@ -146,7 +146,11 @@ int main()
 	bool show_test_window = true;
 	bool show_another_window = false;
 	ImVec4 clear_color = ImColor(60, 55, 15);
+
+	//Set scale based on scale of monitor
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	float scale = 2.f;
+	glfwGetMonitorContentScale(monitor, &scale, nullptr);
 
 	//The render loop
 	while (!glfwWindowShouldClose(window))
