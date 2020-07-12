@@ -215,7 +215,7 @@ int main()
 	glfwSetErrorCallback(error_callback);
 
 	//GLFW creates a window and its OpenGL context with the next function
-	window = glfwCreateWindow(640, 480, "Hello window :)", NULL, NULL);
+	window = glfwCreateWindow(1280, 960, "Demo of OpenCV + ImGui + GLFW", NULL, NULL);
 
 	//Check for errors (which would happen if creating a window fails
 	if (!window)
@@ -228,6 +228,10 @@ int main()
 
 	//Window creation was successful. Continue
 	glfwMakeContextCurrent(window);
+
+	//Sets the number of screen updates to wait before swapping the buffers of a window
+	//Handles vertical synchronization
+	glfwSwapInterval(1);
 
 	glewInit();
 
@@ -243,6 +247,10 @@ int main()
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	float scale = 2.f;
 	glfwGetMonitorContentScale(monitor, &scale, nullptr);
+	
+	float imageScale = 1.f; //Configurable image scale
+	int swapInterval = 1;
+
 
 	// Load the image
 	// Get an image name 
@@ -259,21 +267,25 @@ int main()
 		ImGui_ImplGlfwGL3_NewFrame();
 
 		// ImGui::SetNextWindowSize(ImVec2(320,240));
-		ImGui::Begin("Another Window", &show_another_window);
-		ImGui::Text("Hello");
-
+		ImGui::Begin("Preferences", &show_another_window);
 		// Gui rendering size
-		ImGui::SliderFloat("Display scale", &scale, 1, 3);
-		setGuiScale(scale);
-
+		if(ImGui::SliderFloat("Display scale", &scale, 1, 3)) setGuiScale(scale);
+		// Image rendering size relative to GUI size
+		ImGui::SliderFloat("Image scale", &imageScale, 0.1, 4);
+		// Framerate division factor
+		if (ImGui::SliderInt("Swap interval", &swapInterval, 1, 5)) glfwSwapInterval(swapInterval);
+		//Stats
+		ImGui::Text("Stats:");
+		// Framerate
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
 		ImGui::End();
 
 		// Place the texture in an ImGui image
-		ImGui::Begin("OpenGL Texture Text");
-		ImVec2 imageSize = ImVec2(scale * image.size().width, scale * image.size().height);
-		ImGui::Text("size = %.0f x %.0f", imageSize.x, imageSize.y);
+		ImGui::Begin("Image");
+		float ims = scale * imageScale;
+		ImVec2 imageSize = ImVec2(ims * image.size().width, ims * image.size().height);
+		ImGui::Text("texture size = %.0f x %.0f", imageSize.x, imageSize.y);
+		ImGui::Text("image size = %d x %d", image.size().width, image.size().height);
 		ImGui::Image((void*)(intptr_t)image_texture, imageSize);
 		ImGui::End();
 
@@ -287,7 +299,6 @@ int main()
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 
 	// Cleanup
