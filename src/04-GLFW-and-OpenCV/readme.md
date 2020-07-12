@@ -1,3 +1,5 @@
+![Demonstration screenshot](../../docs/screenshots/04-01.png)
+
 # Project 4: GLFW + OpenCV <!-- omit in toc -->
 This project demonstrates the use of GLFW to create a window with an OpenGL context. 
 Like all projects so far, this one exists in a [single C++ source code file.](main.cpp)

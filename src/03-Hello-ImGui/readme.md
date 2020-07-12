@@ -63,4 +63,5 @@ ImGui::Render();
 
 # Resources
 * [ImGui Github repository](https://github.com/ocornut/imgui)
+* [GLFW monitor handling (for high-DPI scaling)](https://www.glfw.org/docs/latest/monitor.html)
 * [My fork of an unofficial demo](https://github.com/m516/imgui-opengl-glfw-glew-cmake-demo/)

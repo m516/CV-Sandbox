@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    window = glfwCreateWindow(window_width, window_height, "Simple example", NULL, NULL);
+    window = glfwCreateWindow(window_width, window_height, "Simple OpenCV + GLFW example", NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
