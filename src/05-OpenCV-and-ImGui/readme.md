@@ -1,14 +1,15 @@
-![Demonstration of Project 5 working](../../docs/screenshots/05-01.png)
+![Demonstration of Project 5 working in Windows](../../docs/screenshots/05-01.png)
+![Demonstration of Project 5 working in Ubuntu](../../docs/screenshots/05-02.png)
 
 # Project 5: GLFW + OpenCV + ImGui <!-- omit in toc -->
 This project demonstrates the use of GLFW to create a window with an OpenGL context. 
 Like all projects so far, this one exists in a [single C++ source code file.](main.cpp)
 
 ## Table of Contents <!-- omit in toc -->
-- [The Gist](#the-gist)
-- [Resources](#resources)
-	- [Code samples](#code-samples)
-	- [Documentation](#documentation)
+- [The Gist](#The-Gist)
+- [Resources](#Resources)
+	- [Code samples](#Code-samples)
+	- [Documentation](#Documentation)
 
 
 ## The Gist

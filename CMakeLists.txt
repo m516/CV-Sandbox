@@ -28,7 +28,7 @@ project ("CV-Sandbox")
 
 #Manually place all binaries into a folder under bin/
 set(BUILD_FULL_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/)
-message("${Green}Output directory: ${BUILD_FULL_DIRECTORY}${ResetColor}")
+message("${BoldMagenta}Output directory: ${BUILD_FULL_DIRECTORY}${ColorReset}")
 # First for the generic no-config case (e.g. with mingw)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${BUILD_FULL_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${BUILD_FULL_DIRECTORY})
@@ -42,28 +42,41 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 # Manually define a compile-time definition for the media/ directory
-add_compile_definitions(MEDIA_DIRECTORY="../media/")
+set(MEDIA_DIR "${CMAKE_SOURCE_DIR}/media/")
+add_compile_definitions(MEDIA_DIRECTORY="${MEDIA_DIR}")
+message("${BoldMagenta}Media directory: ${MEDIA_DIR}${ColorReset}")
 
 # Find packages used throughout this repository
 
+message("${BoldYellow}Searching for libraries...${ColorReset}")
+
 # OpenCV
+message("${BoldYellow}Finding OpenCV${ColorReset}")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+message("${BoldYellow}OpenCV found at: ${OpenCV_INCLUDE_DIRS}${ColorReset}")
 
 # opengl
+message("${BoldYellow}Finding OpenGL${ColorReset}")
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
+message("${BoldYellow}OpenGL found at: ${OPENGL_INCLUDE_DIRS}${ColorReset}")
 
 # glad
+message("${BoldYellow}Using local copy of GLAD${ColorReset}")
 add_subdirectory(extern/glad)
 include_directories(extern/glad)
 
 # glfw
+message("${BoldYellow}Using local copy of GLFW${ColorReset}")
 add_subdirectory(extern/glfw)
 
-# Dear IMGui
+# Dear ImGui
+message("${BoldYellow}Using local copy of ImGui${ColorReset}")
 add_subdirectory(extern/imgui)
 include_directories(extern)
+
+message("${BoldYellow}Library search complete!${ColorReset}")
 
 # Include sub-projects.
 add_subdirectory ("src")
