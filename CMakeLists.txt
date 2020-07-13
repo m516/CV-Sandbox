@@ -50,16 +50,16 @@ add_compile_definitions(MEDIA_DIRECTORY="../media/")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+# opengl
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+
 # glad
 add_subdirectory(extern/glad)
 include_directories(extern/glad)
 
 # glfw
 add_subdirectory(extern/glfw)
-
-# opengl
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
 
 # Dear IMGui
 add_subdirectory(extern/imgui)
