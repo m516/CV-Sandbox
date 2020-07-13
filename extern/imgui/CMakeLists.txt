@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 
-find_package(GLFW3 CONFIG REQUIRED)
+#find_package(GLFW3 CONFIG REQUIRED)
+#include_directories(../glfw)
+#add_subdirectory(../glfw glfw)
 find_package(GLEW REQUIRED)
 
 add_library(
@@ -18,5 +20,4 @@ add_library(
         stb_truetype.h
         )
 
-target_link_libraries(imgui PRIVATE GLEW::GLEW)
 target_link_libraries(imgui PRIVATE glfw)

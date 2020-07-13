@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.12)
 
 # Define colors
 if(NOT WIN32)
@@ -27,18 +27,18 @@ endif()
 project ("CV-Sandbox")
 
 #Manually place all binaries into a folder under bin/
-set(USAT_FULL_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/)
-message("${Green}Output directory: ${USAT_FULL_DIRECTORY}${ResetColor}")
+set(BUILD_FULL_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/)
+message("${Green}Output directory: ${BUILD_FULL_DIRECTORY}${ResetColor}")
 # First for the generic no-config case (e.g. with mingw)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${USAT_FULL_DIRECTORY})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${USAT_FULL_DIRECTORY})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${USAT_FULL_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${BUILD_FULL_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${BUILD_FULL_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${BUILD_FULL_DIRECTORY})
 # Second, for multi-config builds (e.g. msvc)
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${USAT_FULL_DIRECTORY})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${USAT_FULL_DIRECTORY})
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${USAT_FULL_DIRECTORY})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${BUILD_FULL_DIRECTORY})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${BUILD_FULL_DIRECTORY})
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${BUILD_FULL_DIRECTORY})
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 # Manually define a compile-time definition for the media/ directory
@@ -50,19 +50,15 @@ add_compile_definitions(MEDIA_DIRECTORY="../media/")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+# glad
+include_directories(extern/glad/src extern/glad/include)
+
 # glfw
 add_subdirectory(extern/glfw)
 
 # opengl
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
-
-# glew
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-
-# GLAD
-find_package(glad CONFIG REQUIRED)
 
 # Dear IMGui
 add_subdirectory(extern/imgui)

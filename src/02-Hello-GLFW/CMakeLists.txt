@@ -10,4 +10,4 @@ set(EXECUTABLE_NAME 02_HELLO_GLFW)
 add_executable (${EXECUTABLE_NAME} "main.cpp" "main.h")
 
 # Add tests and install targets if needed.
-target_link_libraries (${EXECUTABLE_NAME} glfw glad::glad)
+target_link_libraries (${EXECUTABLE_NAME} glfw)

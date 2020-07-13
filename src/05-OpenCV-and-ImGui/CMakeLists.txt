@@ -10,4 +10,4 @@ set(EXECUTABLE_NAME 05_OPENCV_AND_IMGUI)
 add_executable (${EXECUTABLE_NAME} "main.cpp" "main.h" "main.cpp" "main.h")
 
 # Add tests and install targets if needed.
-target_link_libraries (${EXECUTABLE_NAME} glfw GLEW::GLEW imgui ${OpenCV_LIBS})
+target_link_libraries (${EXECUTABLE_NAME} glfw imgui ${OpenCV_LIBS})

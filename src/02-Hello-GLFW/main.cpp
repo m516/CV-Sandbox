@@ -3,7 +3,6 @@
 */
 
 #include "main.h"
-#include <glad/glad.h> // ALWAYS place this BEFORE GLFW in the list of headers to include! This REPLACES OpenGL
 #include <GLFW/glfw3.h>
 #include <thread>
 
@@ -67,17 +66,6 @@ int main()
 
 	//Window creation was successful. Continue
 	glfwMakeContextCurrent(window);
-
-	//Initialize GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-
-	//Tell OpenGL the size of the rendering window, so it knows where we want
-	//to display stuff
-	glViewport(0, 0, 640, 480);
 
 	//The render loop
 	while (!glfwWindowShouldClose(window))
