@@ -51,7 +51,8 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # glad
-include_directories(extern/glad/src extern/glad/include)
+add_subdirectory(extern/glad)
+include_directories(extern/glad)
 
 # glfw
 add_subdirectory(extern/glfw)

@@ -10,4 +10,4 @@ set(EXECUTABLE_NAME 04_GLFW_AND_OPENCV)
 add_executable (${EXECUTABLE_NAME} "main.cpp" "main.h")
 
 # Add tests and install targets if needed.
-target_link_libraries (${EXECUTABLE_NAME} glfw ${OpenCV_LIBS})
+target_link_libraries (${EXECUTABLE_NAME} glad glfw ${OpenCV_LIBS})

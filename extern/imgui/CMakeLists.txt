@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.6)
 #find_package(GLFW3 CONFIG REQUIRED)
 #include_directories(../glfw)
 #add_subdirectory(../glfw glfw)
-find_package(GLEW REQUIRED)
 
 add_library(
         imgui STATIC
@@ -20,4 +19,4 @@ add_library(
         stb_truetype.h
         )
 
-target_link_libraries(imgui PRIVATE glfw)
+target_link_libraries(imgui PRIVATE glfw glad)

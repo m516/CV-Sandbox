@@ -1,10 +1,11 @@
 ﻿#include <iostream>
 #include <string>
 
-#include <GL/glew.h>
+#include <glad.h>
 #include <GLFW/glfw3.h>
 
 #include <opencv2/opencv.hpp>
+using namespace std;
 
 using std::cout;
 using std::endl;
@@ -125,6 +126,17 @@ static void init_opengl(int w, int h) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the window
 }
 
+/**
+ * A helper function for terminating the program
+ */
+void terminate(int errorCode) {
+    cout << "Closing application";
+    //Close GLFW
+    glfwTerminate();
+    //Exit
+    exit(errorCode);
+}
+
 int main(int argc, char** argv)
 {
 
@@ -163,13 +175,12 @@ int main(int argc, char** argv)
     glfwSwapInterval(1);
 
     //  Initialise glew (must occur AFTER window creation or glew will error)
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
-    {
-        cout << "GLEW initialisation error: " << glewGetErrorString(err) << endl;
-        exit(-1);
+    if (!gladLoadGL()) {
+        // GLAD failed
+        cerr << "GLAD failed to initialize :(";
+        //Use the terminate() function to safely close the application
+        terminate(1);
     }
-    cout << "GLEW okay - using version: " << glewGetString(GLEW_VERSION) << endl;
 
     init_opengl(window_width, window_height);
 

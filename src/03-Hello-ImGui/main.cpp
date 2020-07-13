@@ -3,7 +3,7 @@
 */
 
 #include "main.h"
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <imgui/imgui.h>
@@ -137,7 +137,12 @@ int main()
 	//Window creation was successful. Continue
 	glfwMakeContextCurrent(window);
 
-	glewInit();
+	if (!gladLoadGL()) {
+		// GLAD failed
+		cerr << "GLAD failed to initialize :(";
+		//Use the terminate() function to safely close the application
+		terminate(1);
+	}
 
 	// Setup ImGui binding
 	ImGui_ImplGlfwGL3_Init(window, true);
