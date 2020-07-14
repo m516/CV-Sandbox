@@ -56,12 +56,6 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 message("${BoldYellow}OpenCV found at: ${OpenCV_INCLUDE_DIRS}${ColorReset}")
 
-# opengl
-message("${BoldYellow}Finding OpenGL${ColorReset}")
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-message("${BoldYellow}OpenGL found at: ${OPENGL_INCLUDE_DIRS}${ColorReset}")
-
 # glad
 message("${BoldYellow}Using local copy of GLAD${ColorReset}")
 add_subdirectory(extern/glad)
