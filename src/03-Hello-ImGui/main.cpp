@@ -7,7 +7,8 @@
 #include <GLFW/glfw3.h>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw_gl3.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 #include <thread>
 
@@ -113,11 +114,22 @@ int main()
 		terminate(1);
 	}
 
-	//Set the requirements for the version of OpenGL to use
+	// Decide GL+GLSL versions
+#if __APPLE__
+	// GL 3.2 + GLSL 150
+	const char* glsl_version = "#version 150";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //Reqired for Mac OS X
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+	// GL 3.0 + GLSL 130
+	const char* glsl_version = "#version 130";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
 
 	//Set GLFW's error callback function
 	glfwSetErrorCallback(error_callback);
@@ -136,6 +148,7 @@ int main()
 
 	//Window creation was successful. Continue
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1); // Enable vsync
 
 	if (!gladLoadGL()) {
 		// GLAD failed
@@ -144,8 +157,14 @@ int main()
 		terminate(1);
 	}
 
-	// Setup ImGui binding
-	ImGui_ImplGlfwGL3_Init(window, true);
+
+
+    // Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
 	setStyle();
 
 	bool show_test_window = true;
@@ -160,7 +179,12 @@ int main()
 	//The render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		ImGui_ImplGlfwGL3_NewFrame();
+		glfwPollEvents();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::ShowDemoWindow(&show_test_window);
 
 		//ImGui::SetNextWindowSize(ImVec2(320,240));
 		ImGui::Begin("Another Window", &show_another_window);
@@ -176,20 +200,19 @@ int main()
 		ImGui::End();
 
 		// Rendering
+		ImGui::Render();
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
-		glfwPollEvents();
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 
 	// Cleanup
-	ImGui_ImplGlfwGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
 	//Close GLFW
 	glfwTerminate();
 	return 0;
