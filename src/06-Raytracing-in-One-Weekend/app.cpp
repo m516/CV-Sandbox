@@ -10,37 +10,6 @@ namespace gui {
 	ImVec4 clear_color = ImColor(60, 55, 15);
 
 
-	void destroy() {
-		cout << "Closing application";
-
-		// Close ImGui
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-		// Close GLFW
-		if(currentGLFWWindow) glfwDestroyWindow(currentGLFWWindow);
-		glfwTerminate();
-	}
-
-	void render() {
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		populateUI(); //defined in ui.h, implemented in ui.cpp
-
-		// Rendering
-		ImGui::Render();
-		int display_w, display_h;
-		glfwGetFramebufferSize(currentGLFWWindow, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		//Show the newly rendered content and replace the buffer
-		glfwSwapBuffers(currentGLFWWindow);
-	}
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -65,8 +34,19 @@ namespace gui {
 		fprintf(stderr, "Error: %s\n", description);
 	}
 
-	void begin()
-	{
+	void destroy() {
+		cout << "Closing application";
+
+		// Close ImGui
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+		// Close GLFW
+		if (currentGLFWWindow) glfwDestroyWindow(currentGLFWWindow);
+		glfwTerminate();
+	}
+
+	void setup() {
 		// Setup window
 		glfwSetErrorCallback(error_callback);
 		if (!glfwInit())
@@ -116,17 +96,41 @@ namespace gui {
 		ImGui_ImplOpenGL3_Init(glsl_version);
 		setStyle();
 
-		//Scaling
-		setGuiScale(estimateSystemScale());
+		//Initialize UI
+		initUI();
+	}
 
-		// The render loop
+	void render() {
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		populateUI(); //defined in ui.h, implemented in ui.cpp
+
+		// Rendering
+		ImGui::Render();
+		int display_w, display_h;
+		glfwGetFramebufferSize(currentGLFWWindow, &display_w, &display_h);
+		glViewport(0, 0, display_w, display_h);
+		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		//Show the newly rendered content and replace the buffer
+		glfwSwapBuffers(currentGLFWWindow);
+	}
+
+
+	void begin()
+	{
+		setup();
+
 		while (!glfwWindowShouldClose(currentGLFWWindow))
 		{
 			render();
 			glfwPollEvents();
 		}
 
-		//Close everything
 		destroy();
 	}
 

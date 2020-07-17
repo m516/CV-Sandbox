@@ -61,12 +61,6 @@ namespace gui {
 
 	}
 
-	void estimateGuiScale()
-	{
-		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-		glfwGetMonitorContentScale(monitor, &windowScale, nullptr);
-	}
-
 	void populateUI()
 	{
 		// ImGui::SetNextWindowSize(ImVec2(320,240));
@@ -88,5 +82,10 @@ namespace gui {
 		ImGui::End();
 	}
 
+	void initUI()
+	{
+		windowScale = estimateSystemScale();
+		setGuiScale(windowScale);
+	}
 	
 }

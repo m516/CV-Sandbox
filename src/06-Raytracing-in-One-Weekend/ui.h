@@ -12,4 +12,5 @@
 namespace gui {
 	void setStyle();
 	void populateUI();
+	void initUI();
 }
