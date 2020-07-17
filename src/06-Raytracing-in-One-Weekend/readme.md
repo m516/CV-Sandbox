@@ -1,4 +1,5 @@
-**Not complete**
+# Work in progress <!-- omit in toc -->
+![Current screenshot](../../docs/screenshots/06-01.png)
 
 # Project 6: Raytracing on One Weekend <!-- omit in toc -->
 This project contains the code I have written for the book [Ray Tracing in One Weekend](raytracing.github.io). By the time it's done, it will work the same way that the book's code does, rendering many spheres resting on a plane, but the results will be visible on a Gui like the one I made for Project 5. 
