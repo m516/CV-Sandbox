@@ -18,7 +18,7 @@
 
 namespace gui {
 	void begin();
-	float estimateScale();
+	float estimateSystemScale();
 	GLFWwindow* getCurrentWindow();
 	void setSwapInterval(int newSwapInterval);
 	void setClearColor(int red, int green, int blue, int alpha);

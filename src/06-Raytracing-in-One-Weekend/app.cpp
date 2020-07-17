@@ -116,6 +116,9 @@ namespace gui {
 		ImGui_ImplOpenGL3_Init(glsl_version);
 		setStyle();
 
+		//Scaling
+		setGuiScale(estimateSystemScale());
+
 		// The render loop
 		while (!glfwWindowShouldClose(currentGLFWWindow))
 		{
@@ -127,9 +130,13 @@ namespace gui {
 		destroy();
 	}
 
-	float estimateScale()
+	float estimateSystemScale()
 	{
-		return 0.0f;
+		//Set scale based on scale of monitor
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		float scale = 2.f;
+		glfwGetMonitorContentScale(monitor, &scale, nullptr);
+		return scale;
 	}
 
 	GLFWwindow* getCurrentWindow()
