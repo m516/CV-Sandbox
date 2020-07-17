@@ -212,8 +212,10 @@ int main()
 	}
 
 	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
-	//Close GLFW
+	ImGui::DestroyContext();
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }
