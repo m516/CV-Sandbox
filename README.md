@@ -29,3 +29,4 @@ Here are all my projects so far:
 |                    [Hello ImGui](src/03-Hello-ImGui) | A basic project that uses the GLFW window created from project 02 to create a simple Gui with ImGui                                      |
 |            [GLFW and OpenCV](src/04-GLFW-and-OpenCV) | A combination of Projects 01 and 02, loading an image with OpenCV and displaying the generated OpenCV Mat with GLFW                      |
 | [GLFW and OpenCV and ImGui](src/05-OpenCV-and-ImGui) | A combination of Projects 03 and 04, loading an image with OpenCV and displaying the generated OpenCV Mat with GLFW *on an ImGui window* |
+| [Raytracing in One Weekend](src/06-Raytracing-in-One-Weekend) | My GUI setup, applied with the book [Ray Tracing in One Weekend](raytracing.github.io), in attempt to interactively render 3D images via ray tracing **(In progress)**  |
