@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.8)
 set(EXECUTABLE_NAME 06_RAYTRACING_IN_ONE_WEEKEND)
 
 # Add source to this project's executable.
-add_executable (${EXECUTABLE_NAME} "main.cpp" "main.h" "app.cpp" "app.h" "ui.cpp" "ui.h" "main.h")
+add_executable (${EXECUTABLE_NAME} "main.cpp" "main.h" "app.cpp" "app.h" "ui.cpp" "ui.h" "main.h" "renderer.h" "renderer.cpp" "raytracing/raytracingutils.h" "raytracing/util/vec2.h" "raytracing/util/vec3.h" "raytracing/simpleCPURenderer.h" "raytracing/simpleCPURenderer.cpp")
 
 # Add tests and install targets if needed.
 target_link_libraries (${EXECUTABLE_NAME} glfw imgui)

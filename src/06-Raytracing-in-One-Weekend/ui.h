@@ -8,6 +8,8 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include "app.h"
+#include "renderer.h"
+#include "raytracing/simpleCPURenderer.h"
 
 namespace gui {
 	void setStyle();

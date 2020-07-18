@@ -7,7 +7,7 @@ namespace gui {
 	bool initialized = false;
 	GLFWwindow* currentGLFWWindow = nullptr;
 	int window_width = 0, window_height = 0;
-	ImVec4 clear_color = ImColor(60, 55, 15);
+	ImVec4 clear_color = ImColor(96, 96, 96);
 
 
 
