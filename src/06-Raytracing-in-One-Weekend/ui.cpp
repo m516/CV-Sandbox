@@ -85,10 +85,14 @@ namespace gui {
 			showWindowSettingsEditor = false,
 			showRenderSettingsEditor = true,
 			showImageViewer = false;
-		//Placeholders (to be implemented later)
 		SimpleCPURaytracer scpur;
 		int renderWidth, renderHeight;
 		float imageScale = 1.f;
+
+		//The list of all CPU ray tracers
+		GenericCPUTracer** cPURayTracingAlgorithms;
+		int numCPURayTracers = 1;
+		int currentCPUTracer = 0;
 
 		void createMenuBar() {
 			if (ImGui::BeginMainMenuBar())
@@ -124,47 +128,93 @@ namespace gui {
 
 		void createRenderSettingsWindow() {
 			// ImGui::SetNextWindowSize(ImVec2(320,240));
-			ImGui::Begin("Render Settings", &showRenderSettingsEditor);
+			ImGui::Begin("Raytracing/Rendering Settings", &showRenderSettingsEditor);
+
+			//Renderer selector
+			if (ImGui::TreeNode("Raytracing Algorithm Selector"))
+			{
+				//Iterate through all the known CPU ray tracing algorithms and present them as options
+				for (int i = 0; i < numCPURayTracers; i++) {
+					if (ImGui::Selectable(cPURayTracingAlgorithms[i]->shortDescription, i==currentCPUTracer))
+						currentCPUTracer = i;
+					//Show the long description if hovered
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip(cPURayTracingAlgorithms[i]->longDescription);
+				}
+				ImGui::TreePop();
+			}//end tree node "Raytracing program selector"
+			
+
+			ImGui::Separator();
+
+			//Custom ray tracer settings
+			if (ImGui::TreeNode("Raytracing Settings"))
+			{
+				cPURayTracingAlgorithms[currentCPUTracer]->addCustomUI();
+				ImGui::TreePop();
+			}//end tree node "Raytracing program selector"
+
+			ImGui::Separator();
 
 			//Render settings
+			static bool liveRender = false;
+			if (ImGui::TreeNode("Render Settings"))
+			{
+
+				//Render size
+				ImGui::Text("Render size (pixels)");
+				if (scpur.busy() || liveRender) { //Don't present the option of adjusting the render settings while rendering
+					char str[128];
+					sprintf_s(str, "%d x %d", renderWidth, renderHeight);
+					ImGui::Text(str);
+				}
+				else { //Make sliders for the width and height of the rendered image
+					ImGui::DragInt("Render width", &renderWidth, 1.f, 32, 16386);
+					ImGui::DragInt("Render height", &renderHeight, 1.f, 32, 16386);
+					if (renderWidth < 32)renderWidth = 32;
+					if (renderHeight < 32)renderHeight = 32;
+				}
+				ImGui::TreePop();
+			}
+
 			ImGui::Separator();
-			ImGui::Text("Render configuration");
-			//Render size
-			ImGui::Text("Render size (pixels)");
-			if (scpur.busy()) {
+
+			ImGui::Checkbox("Live render", &liveRender);
+
+			if (liveRender) {
+				if (!scpur.busy()) {
+					scpur.beginRendering(&renderer, cPURayTracingAlgorithms[currentCPUTracer]);
+				}
+				ImGui::ProgressBar(scpur.progress());
 				char str[128];
-				sprintf_s(str, "%d x %d", renderWidth, renderHeight);
+				sprintf_s(str, "Render time: %.3f seconds", scpur.getRenderTime());
 				ImGui::Text(str);
 			}
 			else {
-				ImGui::DragInt("Render width", &renderWidth, 1.f, 32, 16386);
-				ImGui::DragInt("Render height", &renderHeight, 1.f, 32, 16386);
-				if (renderWidth < 32)renderWidth = 32;
-				if (renderHeight < 32)renderHeight = 32;
-			}
-
-			ImGui::Separator();
-
-			if (scpur.busy()) {
-				if (ImGui::Button("Cancel render")) scpur.cancelRender();
-				ImGui::Text("Pretending to render an image...");
-				ImGui::ProgressBar(scpur.progress());
-			}
-			else {
-				if (ImGui::Button("Start render")){
-					showImageViewer = true;
-					renderer.loadTexture(renderWidth, renderHeight);
-					scpur.beginRendering(&renderer);
+				if (scpur.busy()) {
+					if (ImGui::Button("Cancel render")) scpur.cancelRender();
+					ImGui::Text("Pretending to render an image...");
+					ImGui::ProgressBar(scpur.progress());
 				}
-				if (scpur.done()) {
-					ImGui::Text("Render complete");
-					char str[128];
-					sprintf_s(str, "Time elapsed: %.3f seconds", scpur.getRenderTime());
-					ImGui::Text(str);
+				else {
+					if (ImGui::Button("Start render") && !liveRender) {
+						showImageViewer = true;
+						renderer.loadTexture(renderWidth, renderHeight);
+						scpur.beginRendering(&renderer, cPURayTracingAlgorithms[currentCPUTracer]);
+					}
+					if (scpur.done()) {
+						ImGui::Text("Render complete");
+						char str[128];
+						sprintf_s(str, "Time elapsed: %.3f seconds", scpur.getRenderTime());
+						ImGui::Text(str);
+					}
 				}
-			}
+			}//end "Render settings" tree node
+
+
 			ImGui::End();
 		}
+
 
 		void creeateImageViewerWindow(){
 			// Place the texture in an ImGui image
@@ -251,6 +301,11 @@ namespace gui {
 
 		renderer.loadTexture(640, 480);
 		renderer.getDimensions(&UI::renderWidth, &UI::renderHeight);
+
+		UI::numCPURayTracers = 1;
+		UI::cPURayTracingAlgorithms = new GenericCPUTracer*[1];
+		UI::cPURayTracingAlgorithms[0] = (GenericCPUTracer*) new CPURaytracer1;
+
 	}
 	
 }
