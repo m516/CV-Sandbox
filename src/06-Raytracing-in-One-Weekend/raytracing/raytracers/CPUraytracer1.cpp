@@ -6,8 +6,8 @@ void CPURaytracer1::addCustomUI()
 	ImGui::Text("For this colored box, you just have to press the 'render' button.");
 }
 
-color CPURaytracer1::colorAt(float x, float y)
+Color CPURaytracer1::colorAt(float x, float y, float aspectRatio)
 {
-	color c(x, y, 1. - y);
+	Color c(x, y, 1. - y);
 	return c;
 }

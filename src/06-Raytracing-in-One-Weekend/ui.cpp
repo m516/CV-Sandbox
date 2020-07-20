@@ -302,10 +302,10 @@ namespace gui {
 		renderer.loadTexture(640, 480);
 		renderer.getDimensions(&UI::renderWidth, &UI::renderHeight);
 
-		UI::numCPURayTracers = 1;
-		UI::cPURayTracingAlgorithms = new GenericCPUTracer*[1];
+		UI::numCPURayTracers = 2;
+		UI::cPURayTracingAlgorithms = new GenericCPUTracer*[2];
 		UI::cPURayTracingAlgorithms[0] = (GenericCPUTracer*) new CPURaytracer1;
-
+		UI::cPURayTracingAlgorithms[1] = (GenericCPUTracer*) new CPURaytracer2;
 	}
 	
 }

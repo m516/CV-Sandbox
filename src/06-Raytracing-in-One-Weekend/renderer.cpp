@@ -95,7 +95,7 @@ void Renderer::reloadTexture()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Renderer::setPixel(int x, int y, color c)
+void Renderer::setPixel(int x, int y, Color c)
 {    
 	int pos = y * textureWidth + x;
 	pos <<= 2;

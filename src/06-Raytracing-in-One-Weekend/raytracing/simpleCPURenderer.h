@@ -4,8 +4,8 @@
 #include <mutex>
 #include <ctime> 
 
-#include "raytracingutils.h"
-#include "raytracers/raytracers.h"
+#include "Raytracingutils.h"
+#include "Raytracers/Raytracers.h"
 #include "../renderer.h"
 
 
@@ -17,7 +17,7 @@ public:
 	Parameters:
 		r - a reference to an object that stores the image and possibly shows it on the UI
 
-		t - a reference to a CPURaytracer that can evaluate the color of an arbitrary pixel
+		t - a reference to a CPURaytracer that can evaluate the Color of an arbitrary pixel
 
 		x, y, w, h - the dimensions of the rectangle on the image that needs to be rendered (in pixel coordinates).
 		This rectangle's upper left-hand corner is at the position (x,y), and extends w pixels wide by h pixels tall.
@@ -40,7 +40,7 @@ public:
 	Parameters:
 		r - a reference to an object that stores the image and possibly shows it on the UI
 
-		t - a reference to a CPURaytracer that can evaluate the color of an arbitrary pixel
+		t - a reference to a CPURaytracer that can evaluate the Color of an arbitrary pixel
 
 		x, y, w, h - the dimensions of the rectangle on the image that needs to be rendered (in pixel coordinates).
 		This rectangle's upper left-hand corner is at the position (x,y), and extends w pixels wide by h pixels tall.

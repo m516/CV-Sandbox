@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "raytracing/raytracingutils.h"
+#include "Raytracing/Raytracingutils.h"
 
 class Renderer {
 public:
@@ -13,7 +13,7 @@ public:
 	void getDimensions(int* widthPtr, int* heightPtr) { *widthPtr = textureWidth, * heightPtr = textureHeight; }
 	void loadTexture(int width, int height);
 	void reloadTexture();
-	void setPixel(int x, int y, color c);
+	void setPixel(int x, int y, Color c);
 private:
 	volatile bool initialized = false;
 	unsigned char* imageData = nullptr;

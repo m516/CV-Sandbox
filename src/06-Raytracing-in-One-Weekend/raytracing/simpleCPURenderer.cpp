@@ -40,6 +40,8 @@ void SimpleCPURaytracer::render(Renderer* r, GenericCPUTracer* t, int borderX, i
 	std::cout << "\tWidth:  " << w;
 	std::cout << "\tHeight: " << h;
 	std::cout << std::endl;
+	//Get the aspect ratio
+	float aspectRatio = (float)w / (float)h;
 	
 	//Iterate through all rows
 	for (int j = borderY; j < h; j++) {
@@ -57,9 +59,9 @@ void SimpleCPURaytracer::render(Renderer* r, GenericCPUTracer* t, int borderX, i
 			//(1,1) is the lower right hand corner of the image.
 			double x = (double)(i) / (double)(w);
 			double y = (double)(j) / (double)(h);
-			//Using the CPUTracer "t", evalutate the color at the position (x,y)
+			//Using the CPUTracer "t", evalutate the Color at the position (x,y)
 			//Place the result at pixel (i,j) in the image renderer "r" so it can be displayed by the UI
-			r->setPixel(i, j, t->colorAt(x, y));
+			r->setPixel(i, j, t->colorAt(x, y, aspectRatio));
 		}
 	}
 	//Grab the time when rendering was complete

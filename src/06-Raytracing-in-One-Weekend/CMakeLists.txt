@@ -13,6 +13,7 @@ set(PROJECT_SOURCES
 "renderer.cpp" 
 "raytracing/simpleCPURenderer.cpp" 
 "raytracing/raytracers/CPUraytracer1.cpp"
+"raytracing/raytracers/CPUraytracer2.cpp"
 )
 
 set(PROJECT_HEADERS
@@ -23,11 +24,14 @@ set(PROJECT_HEADERS
 "raytracing/raytracingutils.h"
 "raytracing/util/vec2.h"
 "raytracing/util/vec3.h"
-"raytracing/simpleCPURenderer.h"
- "raytracing/raytracers/CPUraytracer1.h" 
- "raytracing/raytracers/genericCPUtracer.h" 
  "raytracing/util/hittable.h" 
- "raytracing/util/ray.h" "raytracing/raytracers/raytracers.h")
+ "raytracing/util/ray.h" 
+"raytracing/simpleCPURenderer.h"
+ "raytracing/raytracers/genericCPUtracer.h" 
+ "raytracing/raytracers/CPUraytracer1.h" 
+ "raytracing/raytracers/CPUraytracer2.h" 
+ "raytracing/raytracers/raytracers.h" 
+ "raytracing/util/camera.h" "raytracing/util/rotMat.h")
 
 # Add source to this project's executable.
 add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
