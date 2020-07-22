@@ -155,17 +155,17 @@ namespace gui {
 
 	void setClearColor(int red, int green, int blue, int alpha)
 	{
-		clear_color.w = red;
-		clear_color.x = green;
-		clear_color.y = blue;
-		clear_color.z = alpha;
+		clear_color.w = (float)red;
+		clear_color.x = (float)green;
+		clear_color.y = (float)blue;
+		clear_color.z = (float)alpha;
 	}
 
 	void setGuiScale(float guiScale) {
 		int fbw, fbh, ww, wh;
 		glfwGetFramebufferSize(currentGLFWWindow, &fbw, &fbh);
 		glfwGetWindowSize(currentGLFWWindow, &ww, &wh);
-		float pixelRatio = fbw / ww;
+		float pixelRatio = (float)fbw / (float)ww;
 		ImGui::GetIO().FontGlobalScale = guiScale / pixelRatio;
 	}
 
