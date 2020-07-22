@@ -9,8 +9,8 @@
 
 #include "app.h"
 #include "renderer.h"
-#include "raytracing/simpleCPURenderer.h"
-#include "raytracing/raytracers/raytracers.h"
+#include "raytracing/simple_cpu_renderer.h"
+#include "raytracing/raytracers.h"
 
 namespace gui {
 	/*Sets the look-and-feel of the UI */

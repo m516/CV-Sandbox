@@ -4,8 +4,8 @@
 #include <mutex>
 #include <ctime> 
 
-#include "Raytracingutils.h"
-#include "Raytracers/Raytracers.h"
+#include "raytracing_utils.h"
+#include "raytracers.h"
 #include "../renderer.h"
 
 

@@ -1,4 +1,4 @@
-#include "CPUraytracer1.h"
+#include "cpu_raytracer_1.h"
 
 void CPURaytracer1::addCustomUI()
 {

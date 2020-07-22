@@ -1,5 +1,5 @@
 #pragma once
-#include "../raytracingutils.h"
+#include "../raytracing_utils.h"
 
 class RotationMatrix {
 public:

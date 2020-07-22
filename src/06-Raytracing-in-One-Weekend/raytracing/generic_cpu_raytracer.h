@@ -1,6 +1,6 @@
 #pragma once
-#include "../Raytracingutils.h"
 #include "imgui/imgui.h"
+#include "util/vec3.h"
 
 class GenericCPUTracer {
 public:

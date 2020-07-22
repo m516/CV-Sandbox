@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "Raytracing/Raytracingutils.h"
+#include "raytracing/util/vec3.h"
 
 class Renderer {
 public:

@@ -306,6 +306,9 @@ namespace gui {
 		UI::cPURayTracingAlgorithms = new GenericCPUTracer*[2];
 		UI::cPURayTracingAlgorithms[0] = (GenericCPUTracer*) new CPURaytracer1;
 		UI::cPURayTracingAlgorithms[1] = (GenericCPUTracer*) new CPURaytracer2;
+		//Initialize the raytracers
+		for(int i = 0; i < UI::numCPURayTracers; i++)
+			UI::cPURayTracingAlgorithms[i]->init();
 	}
 	
 }

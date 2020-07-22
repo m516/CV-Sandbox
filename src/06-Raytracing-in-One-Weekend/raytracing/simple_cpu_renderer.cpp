@@ -1,4 +1,4 @@
-#include "simpleCPURenderer.h"
+#include "simple_cpu_renderer.h"
 
 
 void SimpleCPURaytracer::beginRendering(Renderer* r, GenericCPUTracer* t, int x, int y, int w, int h)
@@ -16,8 +16,11 @@ void SimpleCPURaytracer::cancelRender()
 //Render
 void SimpleCPURaytracer::render(Renderer* r, GenericCPUTracer* t, int borderX, int borderY, int borderWidth, int borderHeight)
 {
+	//Initialize the raytracer
+	t->init();
+
 	//Delay. This seems to help make the program run more consistently
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	//Begin the timer
 	auto start = std::chrono::system_clock::now();
 	std::time_t start_time = std::chrono::system_clock::to_time_t(start);

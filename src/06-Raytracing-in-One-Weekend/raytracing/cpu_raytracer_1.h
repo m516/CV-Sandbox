@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
-#include "genericCPUtracer.h"
+#include "generic_cpu_raytracer.h"
+#include "raytracing_utils.h"
+#include "util/vec3.h"
+
 
 //Renders a normals-Colored sphere in the middle of the image and 
 class CPURaytracer1 : GenericCPUTracer{

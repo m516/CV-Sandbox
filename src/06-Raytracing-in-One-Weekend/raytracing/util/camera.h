@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../raytracingutils.h"
+#include "ray.h"
 
 
 class Camera : public Ray{

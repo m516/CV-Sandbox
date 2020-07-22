@@ -74,7 +74,7 @@ namespace gui {
 		if (currentGLFWWindow == NULL)
 			return;
 		glfwMakeContextCurrent(currentGLFWWindow);
-		glfwSwapInterval(1); // Enable vsync
+		glfwSwapInterval(3); // Enable vsync
 
 		if (!gladLoadGL()) {
 			// GLAD failed

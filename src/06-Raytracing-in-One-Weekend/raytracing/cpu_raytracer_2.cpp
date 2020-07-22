@@ -1,4 +1,4 @@
-#include "CPURaytracer2.h"
+#include "cpu_raytracer_2.h"
 
 void sliderDouble(const char* label, double* v) {
 	float f = (float)*v;
@@ -12,6 +12,22 @@ void displayVec(Vec3* v) {
 	ImGui::Text(data);
 }
 
+double hitSphere(const Point3& center, double radius, const Ray& r) {
+	Vec3 oc = r.origin() - center;
+	auto a = r.direction().length_squared();
+	auto half_b = dot(oc, r.direction());
+	auto c = oc.length_squared() - radius * radius;
+	auto discriminant = half_b * half_b - a * c;
+
+	if (discriminant < 0) {
+		return -1.0;
+	}
+	else {
+		return (-half_b - sqrt(discriminant)) / a;
+	}
+}
+
+
 void sliderVec3(const char* label, Vec3* v) {
 	ImGui::Text(label);
 	size_t i = strlen(label) + 1;
@@ -23,13 +39,6 @@ void sliderVec3(const char* label, Vec3* v) {
 	sliderDouble(newLabel, &(v->e[1]));
 	newLabel[i] = 'z';
 	sliderDouble(newLabel, &(v->e[2]));
-}
-
-void CPURaytracer2::init()
-{
-	camera.dir = Vec3(0, 1, 0);
-	camera.up = Vec3(0, 0, 1);
-	camera.orig = Vec3(0, 0, 0);
 }
 
 void CPURaytracer2::addCustomUI()
@@ -57,15 +66,19 @@ void CPURaytracer2::addCustomUI()
 	ImGui::Text("Camera up");
 	displayVec(&camera.up);
 
+	ImGui::Separator();
+	ImGui::Text("Sampling");
+	ImGui::SliderInt("Number of samples", &numSamples, 1, 50);
+	ImGui::SliderInt("Maximum bounces per sample", &maxBounces, 1, 50);
+
+
 }
 
-
-Color rayColor(const Ray& r) {
-	Vec3 unit_direction = unit_vector(r.direction());
-	auto t = 0.5 * (unit_direction.z() + 1.0);
-	return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.3, 0.5, 1.0);
+inline void gammaCorrect(Color* c) {
+	c->e[0] = sqrt(c->e[0]);
+	c->e[1] = sqrt(c->e[1]);
+	c->e[2] = sqrt(c->e[2]);
 }
-
 
 Color CPURaytracer2::colorAt(float x, float y, float aspectRatio)
 {
@@ -78,5 +91,26 @@ Color CPURaytracer2::colorAt(float x, float y, float aspectRatio)
 
 	Vec2 imageCoords(x, y);
 
-	return rayColor(camera.computeCameraRay(imageCoords));
+	Color c;
+	for (int i = 0; i < numSamples; i++) {
+		c += rayColor(camera.computeCameraRay(imageCoords));
+	}
+	c = c / numSamples;
+	gammaCorrect(&c);
+	return c;
+}
+
+Color CPURaytracer2::rayColor(const Ray& r, int numBounces)
+{
+	if (numBounces > maxBounces) return Color(0,0,0);
+
+	HitRecord hr;
+	if (world.hit(r, .001, 1000, hr)) {
+		Point3 target = hr.p + hr.normal + randomVec3InUnitSphere();
+		return 0.5 * rayColor(Ray(hr.p, target - hr.p), numBounces + 1);
+	}
+
+	Vec3 normalizedDirection = unitVector(r.direction());
+	double t = 0.5 * (normalizedDirection.z() + 1.0);
+	return (1.0 - t) * Color(.22, .2, .1) + t * Color(0, 0.3, 0.64);
 }
