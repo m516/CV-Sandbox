@@ -4,19 +4,50 @@
 This project contains the code I have written for the book [Ray Tracing in One Weekend](raytracing.github.io). By the time it's done, it will work the same way that the book's code does, rendering many spheres resting on a plane, but the results will be visible on a Gui like the one I made for Project 5. 
 
 ## Table of Contents <!-- omit in toc -->
-- [Framework](#framework)
-	- [UI/Graphics Separation](#uigraphics-separation)
 - [Usage](#usage)
-	- [1. Image Viewer](#1-image-viewer)
-	- [2. Render Settings](#2-render-settings)
-	- [3. Window Settings](#3-window-settings)
-	- [4. Style Editor](#4-style-editor)
-	- [5. Demo Window](#5-demo-window)
-- [Raytracing](#raytracing)
+  - [Image Viewer](#image-viewer)
+  - [Render Settings](#render-settings)
+  - [Window Settings](#window-settings)
+  - [Style Editor](#style-editor)
+  - [Demo Window](#demo-window)
+- [Framework](#framework)
+  - [UI/Graphics Separation](#uigraphics-separation)
+  - [Rendering](#rendering)
 - [Resources](#resources)
-	- [Code samples](#code-samples)
-	- [Documentation](#documentation)
+  - [Code samples](#code-samples)
+  - [Documentation](#documentation)
 
+
+## Usage
+
+Five windows allow the user to control many aspects of the application:
+
+### Image Viewer
+This window shows the rendered image on the screen and some useful information about the image and its underlying OpenGL texture. It only has one control:
+1. **Display Scale** allows users to zoom in to and out of the image.
+
+Hovering over the image creates a widget that allows the user to see a 4x magnified slice of the image.
+
+
+### Render Settings
+This window controls the render pipeline. Its controls are separated into four groups:
+1. **Raytracing Algorithm Selector** sets the algorithm used for rendering an image.
+2. **Raytracing Settings** shows settings that are specific to the algorithm selected, including fields like camera position/direction and the number of samples to compute.
+3. **Render Settings** determine the size of the image to render.
+4. **The Render Button** begins the rendering process on a separate thread. The *Live Render* checkbox automatically starts the rendering process if an image is not currently rendering.
+
+### Window Settings
+This window controls the graphics settings:
+1. **Display Scale** sets the magnification of the GUI, which may increase the viewing experience of users with high-DPI displays. This defaults to the operating system's internal scale, but it can be set to any number.
+2. **Swap Interval** sets the number of monitor-refreshes to wait until the GUI redraws.
+
+### Style Editor
+This allows the user to customize the aesthetics of the GUI. It can be exported to C++ code.
+
+It is a window provided by and included in the ImGui source code.
+
+### Demo Window
+This is a demo window provided by and included in the ImGui source code.
 
 ## Framework
 Four main file pairs control the user interface
@@ -50,39 +81,10 @@ it controls everything about the struture, layout, and appearance of the UI. Lik
 `render()` controls the window and all tools used to display the GUI, but doesn't need to 
 worry about how the GUI is set up or what it does.
 
-## Usage
+### Rendering
+Rendering the image is done entirely by a single, separate render thread. The process for rendering is delegated to subclasses of the `GenericCPUTracer` class. These objects are given coordinates in the image space (e.g. (0,0) is the upper left-hand corner and (1,1) is the lower right-hand corner) and output a Color (a 3D vector).
 
-Five windows allow the user to control many aspects of the application:
-
-### 1. Image Viewer
-This window shows the rendered image on the screen and some useful information about the image and its underlying OpenGL texture. It only has one control:
-1. **Display Scale** allows users to zoom in to and out of the image.
-
-Hovering over the image creates a widget that allows the user to see a 4x magnified slice of the image.
-
-
-### 2. Render Settings
-This window controls the render pipeline. Its controls are separated into four groups:
-1. **Raytracing Algorithm Selector** sets the algorithm used for rendering an image.
-2. **Raytracing Settings** shows settings that are specific to the algorithm selected, including fields like camera position/direction and the number of samples to compute.
-3. **Render Settings** determine the size of the image to render.
-4. **The Render Button** begins the rendering process on a separate thread. The *Live Render* checkbox automatically starts the rendering process if an image is not currently rendering.
-
-### 3. Window Settings
-This window controls the graphics settings:
-1. **Display Scale** sets the magnification of the GUI, which may increase the viewing experience of users with high-DPI displays. This defaults to the operating system's internal scale, but it can be set to any number.
-2. **Swap Interval** sets the number of monitor-refreshes to wait until the GUI redraws.
-
-### 4. Style Editor
-This allows the user to customize the aesthetics of the GUI. It can be exported to C++ code.
-
-It is a window provided by and included in the ImGui source code.
-
-### 5. Demo Window
-This is a demo window provided by and included in the ImGui source code.
-
-## Raytracing
-TODO explain raytracing
+A list of all known GenericCPUTracers is maintained in `ui.cpp`.
 
 
 ## Resources
