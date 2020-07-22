@@ -72,5 +72,22 @@ include_directories(extern)
 
 message("${BoldYellow}Library search complete!${ColorReset}")
 
+#CUDA
+message("${BoldYellow}Checking if CUDA files can be compiled${ColorReset}")
+#https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    message("${BoldYellow}CUDA exists${ColorReset}")
+    enable_language(CUDA)
+    if(NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 11)
+        set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+    endif()
+else()
+    message("${BoldRed}Failed to find CUDA. Some projects can't be run.${ColorReset}")
+endif()
+    
+
 # Include sub-projects.
 add_subdirectory ("src")
