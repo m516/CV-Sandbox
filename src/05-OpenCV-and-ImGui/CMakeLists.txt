@@ -3,6 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+disable_if_opencv_not_found()
+
 # This is the name of the executable
 set(EXECUTABLE_NAME 05_OPENCV_AND_IMGUI)
 

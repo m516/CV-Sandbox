@@ -165,7 +165,7 @@ namespace gui {
 				ImGui::Text("Render size (pixels)");
 				if (scpur.busy() || liveRender) { //Don't present the option of adjusting the render settings while rendering
 					char str[128];
-					sprintf_s(str, "%d x %d", renderWidth, renderHeight);
+					sprintf(str, "%d x %d", renderWidth, renderHeight);
 					ImGui::Text(str);
 				}
 				else { //Make sliders for the width and height of the rendered image
@@ -187,7 +187,7 @@ namespace gui {
 				}
 				ImGui::ProgressBar(scpur.progress());
 				char str[128];
-				sprintf_s(str, "Render time: %.3f seconds", scpur.getRenderTime());
+				sprintf(str, "Render time: %.3f seconds", scpur.getRenderTime());
 				ImGui::Text(str);
 			}
 			else {
@@ -205,7 +205,7 @@ namespace gui {
 					if (scpur.done()) {
 						ImGui::Text("Render complete");
 						char str[128];
-						sprintf_s(str, "Time elapsed: %.3f seconds", scpur.getRenderTime());
+						sprintf(str, "Time elapsed: %.3f seconds", scpur.getRenderTime());
 						ImGui::Text(str);
 					}
 				}
