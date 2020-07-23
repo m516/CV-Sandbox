@@ -1,13 +1,8 @@
-﻿# CMakeList.txt
+﻿# CMakeLists.txt
+disable_if_cuda_not_found()
 
 # This is the name of the executable
 set(EXECUTABLE_NAME 07_HELLO_CUDA)
-
-#Check if CUDA is unavailable
-if(NOT CMAKE_CUDA_COMPILER)
-    message("${BoldRed}    Project can't be built without CUDA${ColorReset}")
-    return()
-endif()
 
 set(PROJECT_CUDA
 HelloCUDA.cu

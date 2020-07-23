@@ -3,6 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+# CMakeLists.txt
+disable_if_opencv_not_found()
+
 # This is the name of the executable
 set(EXECUTABLE_NAME 04_GLFW_AND_OPENCV)
 

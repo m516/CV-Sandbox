@@ -18,3 +18,7 @@ out/
 .vs/
 .vscode/
 bin/
+
+*.vcxproj
+*.vcxproj.filters
+CV-Sandbox.sln

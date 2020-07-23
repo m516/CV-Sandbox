@@ -3,6 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+# CMakeLists.txt
+disable_if_opencv_not_found()
+
 # This is the name of the executable
 set(EXECUTABLE_NAME 01_HELLO_WORLD)
 
@@ -11,3 +14,5 @@ add_executable (${EXECUTABLE_NAME} "CV-Sandbox.cpp" "CV-Sandbox.h")
 
 # Add tests and install targets if needed.
 TARGET_LINK_LIBRARIES (${EXECUTABLE_NAME} ${OpenCV_LIBS})
+
+message("Stop me boi")

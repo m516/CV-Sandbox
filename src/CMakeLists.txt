@@ -4,7 +4,7 @@
 # This script uses a macro to automatically find and build all the algorithms 
 # with CMakeLists.txtunder this folder.
 
-include(${CMAKE_HOME_DIRECTORY}/CMake/macros/subdirlist.cmake)
+include(${MACRO_DIRECTORY}/subdirlist.cmake)
 
 message("${BoldBlue}Searching for subprojects...${ColorReset}")
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})

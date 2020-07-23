@@ -46,15 +46,26 @@ set(MEDIA_DIR "${CMAKE_SOURCE_DIR}/media/")
 add_compile_definitions(MEDIA_DIRECTORY="${MEDIA_DIR}")
 message("${BoldMagenta}Media directory: ${MEDIA_DIR}${ColorReset}")
 
+# Set the macro/helper directory 
+set(MACRO_DIRECTORY ${CMAKE_HOME_DIRECTORY}/CMake/macros)
+message("${BoldMagenta}CMake utility directory: ${MACRO_DIRECTORY}${ColorReset}")
+# Add some macros
+include(${MACRO_DIRECTORY}/libhelpers.cmake)
+
 # Find packages used throughout this repository
 
 message("${BoldYellow}Searching for libraries...${ColorReset}")
 
 # OpenCV
 message("${BoldYellow}Finding OpenCV${ColorReset}")
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-message("${BoldYellow}OpenCV found at: ${OpenCV_INCLUDE_DIRS}${ColorReset}")
+option(USE_OPENCV "Attempt to use OpenCV. If disaled, projects that require OpenCV can't build. Enabled by default" ON)
+if(USE_OPENCV)
+    find_package(OpenCV)
+    include_directories(${OpenCV_INCLUDE_DIRS})
+    message("${BoldYellow}OpenCV found at: ${OpenCV_INCLUDE_DIRS}${ColorReset}")
+else()
+    message("${BoldRed}OpenCV was disabled.${ColorReset}")
+endif()
 
 # glad
 message("${BoldYellow}Using local copy of GLAD${ColorReset}")
@@ -74,18 +85,23 @@ message("${BoldYellow}Library search complete!${ColorReset}")
 
 #CUDA
 message("${BoldYellow}Checking if CUDA files can be compiled${ColorReset}")
+option(USE_CUDA "Attempt to use CUDA. If disaled, projects that require CUDA can't build. Enabled by default" ON)
 #https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html
-include(CheckLanguage)
-check_language(CUDA)
-if(CMAKE_CUDA_COMPILER)
-    message("${BoldYellow}CUDA exists${ColorReset}")
-    enable_language(CUDA)
-    if(NOT DEFINED CMAKE_CUDA_STANDARD)
-        set(CMAKE_CUDA_STANDARD 11)
-        set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+if(USE_CUDA)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        message("${BoldYellow}CUDA exists${ColorReset}")
+        enable_language(CUDA)
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_STANDARD 11)
+            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+        endif()
+    else()
+        message("${BoldRed}Failed to find CUDA. Some projects can't be run.${ColorReset}")
     endif()
 else()
-    message("${BoldRed}Failed to find CUDA. Some projects can't be run.${ColorReset}")
+    message("${BoldRed}CUDA was disabled.${ColorReset}")
 endif()
     
 
