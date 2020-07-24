@@ -18,12 +18,3 @@ jobs:
         opencv-version: master
     - name: run-cmake
       uses: lukka/run-cmake@v2.5
-    - name: run CMake
-      run: cmake .
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
-
