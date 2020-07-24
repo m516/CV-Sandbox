@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 
 #include <thread>
-#include <imgui\imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 using namespace std;
 using namespace cv;
