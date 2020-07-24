@@ -14,10 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: Dovyski/setup-opencv-action@v1
-    - uses: lukka/get-cmake@v3.18.0
       with:
         opencv-version: master
-    - name: get-cmake
+    - name: run-cmake
+      uses: lukka/run-cmake@v2.5
     - name: run CMake
       run: cmake .
     - name: make
