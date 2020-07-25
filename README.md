@@ -1,15 +1,13 @@
-![Project 05: OpenCV with a custom GUI](docs/screenshots/05-01.png)
-![Project 06: Raytracing](docs/screenshots/06-02.png)
-
-
 # Computer Vision Sandbox
 ![C/C++ CI](https://github.com/m516/CV-Sandbox/workflows/C/C++%20CI/badge.svg)
+
+![Project 06: Raytracing](docs/screenshots/06-02.png)
 
 All my personal, non-academic computer vision research lies here.
 
 So far, all my projects are written in C++. This allows me to practice using standard, free tools to make fast, lightweight standalone applications that are relatively easy to integrate with hardware like GPUs and TPUs. Check out my setup at [docs/setup.md](docs/setup.md)
 
-## Libraries
+# Libraries
 
 |                           Name |                                                       Installation instructions                                                       | License                                                                            | Github Repository                            |
 | -----------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------- | :------------------------------------------- |
@@ -21,7 +19,7 @@ So far, all my projects are written in C++. This allows me to practice using sta
 Note that, though my source code is released under the [MIT license](LICENSE), cloning this repository may still bind you to the licenses of the libraries mentioned above.
 
 
-## Projects
+# Projects
 Here are all my projects so far:
 
 |                                                 Name | Description                                                                                                                              |
