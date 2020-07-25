@@ -3,6 +3,7 @@
 
 
 # Computer Vision Sandbox
+![C/C++ CI](https://github.com/m516/CV-Sandbox/workflows/C/C++%20CI/badge.svg)
 
 All my personal, non-academic computer vision research lies here.
 
