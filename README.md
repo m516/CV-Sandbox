@@ -31,4 +31,4 @@ Here are all my projects so far:
 | [GLFW and OpenCV and ImGui](src/05-OpenCV-and-ImGui) | A combination of Projects 03 and 04, loading an image with OpenCV and displaying the generated OpenCV Mat with GLFW *on an ImGui window* |
 | [Raytracing in One Weekend](src/06-Raytracing-in-One-Weekend) | My GUI setup, applied with the book [Ray Tracing in One Weekend](raytracing.github.io), in attempt to interactively render 3D images via ray tracing  |
 | [Hello CUDA](src/07-Hello-CUDA) | A basic program written in CUDA C++  |
-| [OpenCV Video Template](src/08-08-OpenCV-Video-Template) | A template program for video analysis with OpenCV  |
+| [OpenCV Video Template](src/08-OpenCV-Video-Template) | A template program for video analysis with OpenCV  |
