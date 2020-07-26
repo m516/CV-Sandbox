@@ -1,17 +1,18 @@
-![Current screenshot](../../docs/screenshots/08-01.png)
+![Current screenshot](../../docs/screenshots/06-02.png)
 
-# Project 8: OpenCV Video Template <!-- omit in toc -->
-This project opens a video, plays it, and exposes an OpenCV Mat instance
-and simple API to control the video feed and render the current Mat in real time
-on a GUI. It uses the GUI setup from Project 6 on the tools from Project 5.
+# Project 6: Raytracing in One Weekend <!-- omit in toc -->
+This project contains the code I have written for the book [Ray Tracing in One Weekend](raytracing.github.io). By the time it's done, it will work the same way that the book's code does, rendering many spheres resting on a plane, but the results will be visible on a Gui like the one I made for Project 5. 
 
 ## Table of Contents <!-- omit in toc -->
 - [Usage](#usage)
-  - [Video Viewer](#video-viewer)
+  - [Image Viewer](#image-viewer)
+  - [Render Settings](#render-settings)
   - [Window Settings](#window-settings)
   - [Style Editor](#style-editor)
   - [Demo Window](#demo-window)
 - [Framework](#framework)
+  - [UI/Graphics Separation](#uigraphics-separation)
+  - [Rendering](#rendering)
 - [Resources](#resources)
   - [Code samples](#code-samples)
   - [Documentation](#documentation)
@@ -19,19 +20,21 @@ on a GUI. It uses the GUI setup from Project 6 on the tools from Project 5.
 
 ## Usage
 
-Four windows allow the user to control many aspects of the application:
+Five windows allow the user to control many aspects of the application:
 
-### Video Viewer
-This window shows the rendered image on the screen and some useful information about the image and its underlying OpenGL texture. These are its controls:
-
-1. **Video Position** allows users to view the index if the current frame and to scrub the video feed.
-2. **Loop** starts the video at the beginning if the next frame couldn't be displayed.
-3. **Play** advances to the next frame every time the screen refreshes.
-4. **Next frame** advances to the next frame.
-5. **Display Scale** allows users to zoom in to and out of the image.
+### Image Viewer
+This window shows the rendered image on the screen and some useful information about the image and its underlying OpenGL texture. It only has one control:
+1. **Display Scale** allows users to zoom in to and out of the image.
 
 Hovering over the image creates a widget that allows the user to see a 4x magnified slice of the image.
 
+
+### Render Settings
+This window controls the render pipeline. Its controls are separated into four groups:
+1. **Raytracing Algorithm Selector** sets the algorithm used for rendering an image.
+2. **Raytracing Settings** shows settings that are specific to the algorithm selected, including fields like camera position/direction and the number of samples to compute.
+3. **Render Settings** determine the size of the image to render.
+4. **The Render Button** begins the rendering process on a separate thread. The *Live Render* checkbox automatically starts the rendering process if an image is not currently rendering.
 
 ### Window Settings
 This window controls the graphics settings:
@@ -62,14 +65,31 @@ Four main file pairs control the user interface
   * `void initUI()`: initializes the variables and settings used for the user interface prior to the first time `void populateUI()` is called.
 
 
+### UI/Graphics Separation
+
+Rendering the graphics of a project this size was significantly more challenging than the simpler Project 5. But ImGui made the separation relatively easy due to its immediate-mode setup. This is how the render loop works:
+
+1. A function under `app.cpp` called `render()` is called periodically from `begin()`, and it updates the window at a refresh rate set by the user due to the vertical synchronization from GLFW.
+2. Then `render()` creates a new ImGui frame.
+3. Then it runs the function `populateUI()` to load all the ImGui widgets I placed in the GUI.
+4. Then it calls `ImGui::Render()`
+5. Finally `populateUI()` renders the ImGui frame on the OpenGL pixel buffer using ImGui_ImplOpenGL3_RenderDrawData() to show the GUI to the user.
+
+
 Therefore, `populateUI()`is not at all responsible for rendering the UI, yet 
 it controls everything about the struture, layout, and appearance of the UI. Likewise,
 `render()` controls the window and all tools used to display the GUI, but doesn't need to 
 worry about how the GUI is set up or what it does.
 
+### Rendering
+Rendering the image is done entirely by a single, separate render thread. The process for rendering is delegated to subclasses of the `GenericCPUTracer` class. These objects are given coordinates in the image space (e.g. (0,0) is the upper left-hand corner and (1,1) is the lower right-hand corner) and output a Color (a 3D vector).
+
+A list of all known GenericCPUTracers is maintained in `ui.cpp`.
+
 
 ## Resources
 ### Code samples
 * [Project 05: OpenCV and ImGui](../05-OpenCV-and-ImGui)
-* [Project 06: Raytracing in One Weekend](../06-Raytracing-in-One-Weekend)
 ### Documentation
+* [Ray Tracing in One Weekend](raytracing.github.io)
+* [Ray Tracing in One Weekend source code](https://github.com/RayTracing/raytracing.github.io/)
