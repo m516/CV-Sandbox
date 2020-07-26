@@ -3,7 +3,6 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-# CMakeLists.txt
 disable_if_opencv_not_found()
 
 # This is the name of the executable
