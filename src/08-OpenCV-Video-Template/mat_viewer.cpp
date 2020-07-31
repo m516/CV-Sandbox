@@ -153,7 +153,6 @@ void MatViewer::update()
 
 void MatViewer::generateTexture()
 {
-	
 
 	if (mat->empty()) {
 		std::cout << "image empty" << std::endl;

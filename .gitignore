@@ -22,3 +22,4 @@ bin/
 *.vcxproj
 *.vcxproj.filters
 CV-Sandbox.sln
+*.ini

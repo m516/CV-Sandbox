@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../raytracing_utils.h"
-
 #include <cmath>
 #include <iostream>
 
@@ -44,14 +42,6 @@ public:
 
     double length_squared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
-    }
-
-    inline static Vec3 random() {
-        return Vec3(randomDouble(), randomDouble(), randomDouble());
-    }
-
-    inline static Vec3 random(double min, double max) {
-        return Vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
     }
 
 public:

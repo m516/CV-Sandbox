@@ -9,10 +9,12 @@ public:
 	void addToGUI();
 	bool calculateOpticalFlow(Mat& mat1, Mat& mat2);
 	bool calculateOpticalFlowWithNewFrame(Mat& newFrame);
+	void recaulculateOpticalFlow();
 	void initOrUpdateViewers();
 private:
 	Mat frame1, frame2;
 	Mat flow;
+	Mat visibleFlow;
 
 	MatViewer frame1Viewer, frame2Viewer, flowViewer;
 	

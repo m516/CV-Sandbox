@@ -91,7 +91,7 @@ namespace gui {
 			showDemoWindow = false,
 			showWindowSettingsEditor = false,
 			showVideoViewer = true,
-			showOpticalFlow = false;
+			showOpticalFlow = true;
 
 
 		void createMenuBar() {
@@ -136,7 +136,8 @@ namespace gui {
 		}
 
 		void createOpticalFlowViewer(){
-			ImGui::Begin("Optical Flow", &showVideoViewer);
+			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
+			ImGui::Begin("Optical Flow", &showVideoViewer, flags);
 			
 			if (ImGui::Button("Calculate Flow")) {
 				opticalFlowCPU.calculateOpticalFlowWithNewFrame(videoViewer->mat);
