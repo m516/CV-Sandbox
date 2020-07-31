@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "video_viewer.h"
+#include "optical_flow_cpu.h"
 
 namespace gui {
 
@@ -10,6 +11,7 @@ namespace gui {
 	//Project-specific fields
 	VideoCapture videoCapture;
 	VideoViewer* videoViewer;
+	OpticalFlowCPU opticalFlowCPU;
 
 
 	void setStyle() {
@@ -88,7 +90,8 @@ namespace gui {
 		bool showStyleEditor = false,
 			showDemoWindow = false,
 			showWindowSettingsEditor = false,
-			showVideoViewer = true;
+			showVideoViewer = true,
+			showOpticalFlow = false;
 
 
 		void createMenuBar() {
@@ -96,6 +99,7 @@ namespace gui {
 			{
 				if (ImGui::BeginMenu("Windows")) {
 					ImGui::MenuItem("Video Viewer", 0, &showVideoViewer);
+					ImGui::MenuItem("Optical Flow", 0, &showOpticalFlow);
 					ImGui::MenuItem("Window Settings", 0, &showWindowSettingsEditor);
 					ImGui::Separator();
 					ImGui::MenuItem("Style editor", 0, &showStyleEditor);
@@ -122,11 +126,24 @@ namespace gui {
 			ImGui::End();
 		}
 			
-		void creeateImageViewerWindow(){
+		void createImageViewerWindow(){
 			// Place the texture in an ImGui image
 			ImGui::Begin("Video", &showVideoViewer);
 
 			videoViewer->addToGUI();
+
+			ImGui::End();
+		}
+
+		void createOpticalFlowViewer(){
+			ImGui::Begin("Optical Flow", &showVideoViewer);
+			
+			if (ImGui::Button("Calculate Flow")) {
+				opticalFlowCPU.calculateOpticalFlowWithNewFrame(videoViewer->mat);
+				opticalFlowCPU.initOrUpdateViewers();
+			}
+
+			opticalFlowCPU.addToGUI();		
 
 			ImGui::End();
 		}
@@ -137,9 +154,10 @@ namespace gui {
 	{
 		UI::createMenuBar();
 		if (UI::showDemoWindow) ImGui::ShowDemoWindow();
-		if (UI::showVideoViewer) UI::creeateImageViewerWindow();
+		if (UI::showVideoViewer) UI::createImageViewerWindow();
 		if (UI::showStyleEditor) ImGui::ShowStyleEditor();
 		if (UI::showWindowSettingsEditor) UI::createWindowSettingsWindow();
+		if (UI::showOpticalFlow) UI::createOpticalFlowViewer();
 	}
 
 	void initUI()

@@ -65,7 +65,7 @@ void MatViewer::reloadTexture()
 }
 
 
-MatViewer::MatViewer(const char* name, Mat& mat)
+MatViewer::MatViewer(std::string name, Mat& mat)
 {
 
 	cout << "Mat: " << mat.cols << " x " << mat.rows << endl;
@@ -81,23 +81,26 @@ MatViewer::MatViewer(const char* name, Mat& mat)
 
 MatViewer::~MatViewer()
 {
+	//if (textureID) glDeleteTextures(1, &textureID);
 }
 
 void MatViewer::addToGUI(bool withControls, bool withTooltip)
 {
-	static float imageScale = 1;
+	//Skip if not initialized
+	if(!initialized()) {
+		ImGui::Text("MatViewer not initialized");
+		return;
+	}
+
+	ImGui::Text(name.c_str());
 
 	//Display scale
-	ImGui::SliderFloat("Display scale", &imageScale, 0.1, 5, "%.3f", 2.f);
+	ImGui::SliderFloat((name + " Display Scale").c_str(), &imageScale, 0.1, 5, "%.3f", 2.f);
 
 	//Get data about the image and texture
 	ImGuiIO& io = ImGui::GetIO();
 	float myW = (float)width,
 	myH = (float)height;
-
-	//Print data about the image
-	ImGui::Text("Texture ID = %d", textureID);
-	ImGui::Text("size = %d x %d", myW, myH);
 
 	//Scale the image based on the user's preference
 	myW *= imageScale;
@@ -134,22 +137,39 @@ void MatViewer::addToGUI(bool withControls, bool withTooltip)
 		ImGui::Image((void*)(intptr_t)textureID, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, tint_col, border_col);
 		ImGui::EndTooltip();
 	}
+
+	//Print data about the image
+	ImGui::Text("Texture ID = %d", textureID);
+	ImGui::Text("size = %d x %d", width, height);
+
 }
 
 void MatViewer::update()
 {
-	reloadTexture();
+	if (mat == nullptr) return;
+	if(mat->rows != height || mat->cols != width) generateTexture();
+	else reloadTexture();
 }
 
 void MatViewer::generateTexture()
 {
+	
+
 	if (mat->empty()) {
 		std::cout << "image empty" << std::endl;
 		return;
 	}
-	
 
+	//Destroy the last texture
+	if(textureID) glDeleteTextures(1, &textureID);
+
+
+	//Generate the texture
 	textureID = matToTexture(*mat);
+
+	//Update the dimensions
+	width = mat->cols;
+	height = mat->rows;
 
 	cout << "TextureID = " << textureID << endl;
 

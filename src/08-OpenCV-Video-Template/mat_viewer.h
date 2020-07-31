@@ -10,8 +10,10 @@ using namespace std;
 
 class MatViewer {
 public:
+    /*Creates an empty MatViewer*/
+    MatViewer(){}
     /*Creates a new MatViewer that binds to a Mat*/
-    MatViewer(const char* name, Mat& mat);
+    MatViewer(std::string name, Mat& mat);
     /*Destroys a MatViewer*/
     ~MatViewer();
     /*
@@ -29,11 +31,14 @@ public:
     void update();
     /*Gets the dimensions of this Mat and places them in width and height*/
     void getDimensions(int* width, int* height) { *width = this->width; *height = this->height; };
+    /**/
+    bool initialized() { return textureID > 0 && width > 0 && height > 0; }
 private:
-    Mat* mat;
+    Mat* mat = nullptr;
     GLuint textureID = 0;
-    const char* name;
+    std::string name;
     int width = 0, height = 0;
+    float imageScale = 1;
 
     /*A helper function to create the texture*/
     void generateTexture();
@@ -41,4 +46,5 @@ private:
     void reloadTexture();
     /*A helper function to create the texture from a Mat. Returns the texture ID*/
     GLuint matToTexture(const cv::Mat& mat);
+    
 };
