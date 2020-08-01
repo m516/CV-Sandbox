@@ -17,7 +17,8 @@ set(PROJECT_SOURCES
 "mat_viewer.cpp"
 "ui.cpp"
  "video_viewer.cpp" 
- "optical_flow_cpu.cpp")
+ "algorithms/optical_flow/optical_flow_ui.cpp"
+ "algorithms/optical_flow/optical_flow.cpp")
 
 # In UNIX, set PROJECT_HEADERS using the following command
 # find . | grep .h
@@ -30,7 +31,8 @@ set(PROJECT_HEADERS
 "util/vec2.h"
 "util/vec3.h"
 "video_viewer.h"
- "optical_flow_cpu.h")
+ "algorithms/optical_flow/optical_flow_ui.h" 
+ "algorithms/optical_flow/optical_flow.h")
 
 
 # Add source to this project's executable.

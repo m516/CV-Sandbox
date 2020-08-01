@@ -1,6 +1,6 @@
 #include "ui.h"
 #include "video_viewer.h"
-#include "optical_flow_cpu.h"
+#include "algorithms/optical_flow/optical_flow_ui.h"
 
 namespace gui {
 
@@ -11,7 +11,7 @@ namespace gui {
 	//Project-specific fields
 	VideoCapture videoCapture;
 	VideoViewer* videoViewer;
-	OpticalFlowCPU opticalFlowCPU;
+	OpticalFlowUI* opticalFlowUI;
 
 
 	void setStyle() {
@@ -127,25 +127,16 @@ namespace gui {
 		}
 			
 		void createImageViewerWindow(){
-			// Place the texture in an ImGui image
+			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
 			ImGui::Begin("Video", &showVideoViewer);
-
 			videoViewer->addToGUI();
-
 			ImGui::End();
 		}
 
 		void createOpticalFlowViewer(){
 			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
 			ImGui::Begin("Optical Flow", &showVideoViewer, flags);
-			
-			if (ImGui::Button("Calculate Flow")) {
-				opticalFlowCPU.calculateOpticalFlowWithNewFrame(videoViewer->mat);
-				opticalFlowCPU.initOrUpdateViewers();
-			}
-
-			opticalFlowCPU.addToGUI();		
-
+			opticalFlowUI->addToGUI();
 			ImGui::End();
 		}
 	}
@@ -174,6 +165,8 @@ namespace gui {
 		videoCapture = VideoCapture(filename);
 
 		videoViewer = new VideoViewer(videoCapture);
+
+		opticalFlowUI = new OpticalFlowUI(videoViewer->mat);
 
 	}
 	
