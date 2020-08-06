@@ -13,5 +13,3 @@ add_executable (${EXECUTABLE_NAME} "CV-Sandbox.cpp" "CV-Sandbox.h")
 
 # Add tests and install targets if needed.
 TARGET_LINK_LIBRARIES (${EXECUTABLE_NAME} ${OpenCV_LIBS})
-
-message("Stop me boi")
