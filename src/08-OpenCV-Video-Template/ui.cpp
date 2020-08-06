@@ -128,7 +128,7 @@ namespace gui {
 			
 		void createImageViewerWindow(){
 			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
-			ImGui::Begin("Video", &showVideoViewer);
+			ImGui::Begin("Video", &showVideoViewer, flags);
 			videoViewer->addToGUI();
 			ImGui::End();
 		}
@@ -169,5 +169,4 @@ namespace gui {
 		opticalFlowUI = new OpticalFlowUI(videoViewer->mat);
 
 	}
-	
 }

@@ -1,4 +1,29 @@
+#include <stdio.h>
+#include <assert.h>
+#include <conio.h>
+#include <iostream>
+
+
 #include "optical_flow.h"
+
+
+void computePixels(const unsigned char* const frame1, const unsigned char* const frame2, const int width, const int height, uint16_t* outputFlow){
+	int index = 0;//blockIdx.x * blockDim.x + threadIdx.x;
+	int stride = 1;//blockDim.x * gridDim.x;
+
+	int numElements = width*height;
+
+	index*=2;
+	stride*=2;
+	numElements*=2;
+	
+	for(int i = index; i < numElements; i += stride){
+		//TODO
+		outputFlow[i]=-128;
+		outputFlow[i+1]=255;
+	}
+}
+
 
 OpticalFlow::OpticalFlow() {}
 
@@ -27,15 +52,17 @@ bool OpticalFlow::recaulculateOpticalFlow() {
 	if (invalid()) return false;
 	//Initial calculation hasn't been done yet if the flow matrix's dimensions are 0
 	if (flow.rows == 0 || flow.cols == 0) return false;
-
-	//Generate a new vector field. This is a placeholder for other calculations that come later.
-	randu(flow, Scalar(-255, -255), Scalar(255, 255));
-
-	for (int i = 0; i < flow.rows; i++) {
-		for (int j = 0; j < flow.cols; j++) {
-
-		}
-	}
+	//Get the dimensions of the image
+	int width = flow.cols, height = flow.rows;
+	//Copy the data from flow to a new array called flow_device. This will make it easier to change to CUDA
+	uint16_t* flow_device = (uint16_t*)malloc(width*height*2*sizeof(uint16_t));
+	//Upload the data
+	memcpy(flow_device, flow.data, width*height*2*sizeof(uint16_t));
+	//Compute the pixels
+	computePixels(frame1.data, frame2.data, width, height, flow_device);
+	//Download the result
+	memcpy(flow.data, flow_device, width*height*2*sizeof(uint16_t));
+	free(flow_device);
 
 	return true;
 }
