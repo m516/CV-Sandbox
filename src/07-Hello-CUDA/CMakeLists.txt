@@ -13,7 +13,7 @@ set(PROJECT_SOURCES
 )
 
 set(PROJECT_HEADERS
-HelloCUDA.h
+#Place .h files here
 )
 
 # Add source to this project's executable.
