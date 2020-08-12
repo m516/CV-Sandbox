@@ -10,7 +10,7 @@
 #include "timer.h"
 
 
-#define THREADS_PER_BLOCK 256
+#define THREADS_PER_BLOCK 128
 
 int windowWidth = 800, windowHeight = 480;
 
@@ -18,8 +18,6 @@ using namespace std;
 
 __global__ void update_surface(cudaSurfaceObject_t surface, int windowWidth, int windowHeight, int i)
 {
-  for(int i = 0; i < 1000; i++) ;
-
   int x = threadIdx.x + blockIdx.x * blockDim.x;
   int y = threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -29,7 +27,15 @@ __global__ void update_surface(cudaSurfaceObject_t surface, int windowWidth, int
   if(x >= windowWidth)
     return;
 
-  uchar4 pixel = { xPrime & 0xff, yPrime & 0xff, yPrime & 0xff, 0xff };
+  float red = (float)y / windowHeight;
+  float green = 1.f - (float)y / windowHeight;
+  float blue = (float)x / windowWidth;
+  float alpha = 1.f;
+
+  uchar4 pixel = { (uint8_t)(red*255),
+    (uint8_t)(green*255),
+    (uint8_t)(blue*255),
+    (uint8_t)(alpha*255)};
 
   surf2Dwrite(pixel, surface, x * sizeof(uchar4), y);
 }
@@ -127,30 +133,43 @@ int main(int argc, char **argv)
         GL_UNSIGNED_BYTE,  // Image data type
         data);        // The actual image data itself
 
-    //Create the CUDA array and graphics resource
+    //Create the CUDA array and texture reference
     cudaArray *bitmap_d;
     cudaGraphicsResource *cudaTextureID;
-    
+    //Register the GL texture with the CUDA graphics library. A new cudaGraphicsResource is created, and its address is placed in cudaTextureID.
+    //Documentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__OPENGL.html#group__CUDART__OPENGL_1g80d12187ae7590807c7676697d9fe03d
     cudaGraphicsGLRegisterImage(&cudaTextureID, textureID, GL_TEXTURE_2D,
                                 cudaGraphicsRegisterFlagsNone);
     cudaCheckError();
-  
+    //Map graphics resources for access by CUDA.
+    //Documentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__INTEROP.html#group__CUDART__INTEROP_1gad8fbe74d02adefb8e7efb4971ee6322
     cudaGraphicsMapResources(1, &cudaTextureID, 0);
     cudaCheckError();
-  
+    //Get the location of the array of pixels that was mapped by the previous function and place that address in bitmap_d
+    //Documentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__INTEROP.html#group__CUDART__INTEROP_1g0dd6b5f024dfdcff5c28a08ef9958031
     cudaGraphicsSubResourceGetMappedArray(&bitmap_d, cudaTextureID, 0, 0);
     cudaCheckError();
-  
+    //Create a CUDA resource descriptor. This is used to get and set attributes of CUDA resources.
+    //This one will tell CUDA how we want the bitmap_surface to be configured.
+    //Documentation for the struct: https://docs.nvidia.com/cuda/cuda-runtime-api/structcudaResourceDesc.html#structcudaResourceDesc
     struct cudaResourceDesc resDesc;
+    //Clear it with 0s so that some flags aren't arbitrarily left at 1s
     memset(&resDesc, 0, sizeof(resDesc));
+    //Set the resource type to be an array for convenient processing in the CUDA kernel.
+    //List of resTypes: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html#group__CUDART__TYPES_1g067b774c0e639817a00a972c8e2c203c
     resDesc.resType = cudaResourceTypeArray;
-  
+    //Bind the new descriptor with the bitmap created earlier.
     resDesc.res.array.array = bitmap_d;
+    //Create a new CUDA surface ID reference.
+    //This is really just an unsigned long long.
+    //Docuentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html#group__CUDART__TYPES_1gbe57cf2ccbe7f9d696f18808dd634c0a
     cudaSurfaceObject_t bitmap_surface = 0;
+    //Create the surface with the given description. That surface ID is placed in bitmap_surface.
+    //Documentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__SURFACE__OBJECT.html#group__CUDART__SURFACE__OBJECT_1g958899474ab2c5f40d233b524d6c5a01
     cudaCreateSurfaceObject(&bitmap_surface, &resDesc);
     cudaCheckError();
   
-    dim3 blocks(ceil((float)windowWidth / THREADS_PER_BLOCK), windowHeight);
+    dim3 blocks((unsigned int)ceil((float)windowWidth / THREADS_PER_BLOCK), windowHeight);
 
     //Frame counter
     int i = 0;
