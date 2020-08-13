@@ -16,28 +16,69 @@ int windowWidth = 800, windowHeight = 480;
 
 using namespace std;
 
-__global__ void update_surface(cudaSurfaceObject_t surface, int windowWidth, int windowHeight, int i)
+//A custom, lightweight CUDA implementation of a 2D vector with floats.
+class CUDAVec2{
+public:
+  __device__ CUDAVec2(float x = 0, float y = 0){this->x = x; this->y=y;}
+  __device__ CUDAVec2(CUDAVec2& v){x = v.x; y=v.y;}
+  float x, y;
+  //Get the magnitude of this vector.
+  __device__ float mag(){return hypotf(x,y);}
+  //Subtract an amount from this vector.
+  __device__ void subtract(CUDAVec2 amount){x-=amount.x;y-=amount.y;}
+  //Subtract an amount from this vector.
+  __device__ void subtract(float x, float y){this->x-=x;this->y-=y;}
+};
+
+__global__ void update_surface(cudaSurfaceObject_t surface, int textureWidth, int textureHeight, int i)
 {
-  int x = threadIdx.x + blockIdx.x * blockDim.x;
-  int y = threadIdx.y + blockIdx.y * blockDim.y;
+  int xPx = threadIdx.x + blockIdx.x * blockDim.x;
+  int yPx = threadIdx.y + blockIdx.y * blockDim.y;
 
-  uint8_t xPrime = (uint8_t) (x + 3*i);
-  uint8_t yPrime = (uint8_t) (y + i);
-
-  if(x >= windowWidth)
+  if(xPx >= textureWidth)
+    return;
+  if(yPx >= textureHeight)
     return;
 
-  float red = (float)y / windowHeight;
-  float green = 1.f - (float)y / windowHeight;
-  float blue = (float)x / windowWidth;
+  CUDAVec2 normalizedCoordinates((float)xPx / textureWidth, (float)yPx / textureHeight);
+  i%=400;
+  float theta = (float)i/63.661977236758134307553505349006f;
+
+  bool inCircle = false;
+
+  //Create and find the intersection of a bunch of circles
+  int numCircles = 10;
+  for(int i = 0; i < numCircles; i++){
+    theta+=(float)6.283185307179586476925286766559f/numCircles;
+    CUDAVec2 circlePosition(0.5+0.4*cos(theta), 0.5+0.4*sin(theta));
+    CUDAVec2 v (normalizedCoordinates);
+    v.subtract(circlePosition);
+    float r = v.mag();
+    if(r<0.1){
+      inCircle = true;
+      break;
+    }
+  }
+
+
+  float red = normalizedCoordinates.x;
+  float green = 1.f - normalizedCoordinates.y;
+  float blue = 1.f-normalizedCoordinates.x;
   float alpha = 1.f;
+
+  if(inCircle){
+    red = 1.f - red;
+    green = 1.f - green;
+    blue = 1.f - blue;
+  }
+
 
   uchar4 pixel = { (uint8_t)(red*255),
     (uint8_t)(green*255),
     (uint8_t)(blue*255),
     (uint8_t)(alpha*255)};
 
-  surf2Dwrite(pixel, surface, x * sizeof(uchar4), y);
+  surf2Dwrite(pixel, surface, xPx * sizeof(uchar4), yPx);
 }
 
 static void init_opengl(int w, int h) {
@@ -121,8 +162,9 @@ int main(int argc, char **argv)
     // Set texture clamping method
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    // Create the texture
-    unsigned char* data = new unsigned char[windowWidth*windowHeight*4]; 
+    // Create the texture and its attributes
+    int textureWidth = windowWidth, textureHeight = windowHeight;
+    unsigned char* data = new unsigned char[textureWidth*textureHeight*4]; 
     glTexImage2D(GL_TEXTURE_2D,     // Type of texture
         0,                 // Pyramid level (for mip-mapping) - 0 is the top level
         GL_RGBA,            // Internal colour format to convert to
@@ -169,7 +211,7 @@ int main(int argc, char **argv)
     cudaCreateSurfaceObject(&bitmap_surface, &resDesc);
     cudaCheckError();
   
-    dim3 blocks((unsigned int)ceil((float)windowWidth / THREADS_PER_BLOCK), windowHeight);
+    dim3 blocks((unsigned int)ceil((float)textureWidth / THREADS_PER_BLOCK), textureHeight);
 
     //Frame counter
     int i = 0;
@@ -178,7 +220,7 @@ int main(int argc, char **argv)
       //Start the timer
       Timer stopwatch;
       //Update the texture with the CUDA kernel
-      update_surface<<<blocks, THREADS_PER_BLOCK>>>(bitmap_surface, windowWidth, windowHeight, i++);
+      update_surface<<<blocks, THREADS_PER_BLOCK>>>(bitmap_surface, textureWidth, textureHeight, i++);
       //Print elapsed time occasionally
       if(i%10==0){
         float fps = 1.f/stopwatch.getElapsedSeconds();
