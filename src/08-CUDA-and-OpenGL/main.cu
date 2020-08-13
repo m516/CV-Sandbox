@@ -30,54 +30,73 @@ public:
   __device__ void subtract(float x, float y){this->x-=x;this->y-=y;}
 };
 
-__global__ void update_surface(cudaSurfaceObject_t surface, int textureWidth, int textureHeight, int i)
+/**
+ * @brief Updates a surface per-pixel, much like a GLSL shader on an OpenGL texture.
+ * This kernel makes a rotating ring of circles on a colorful background.
+ * 
+ * @param surface the output/input CUDA surface ID. This is where color data can be read from and written to.
+ * @param textureWidth the width of the surface in pixels.
+ * @param textureHeight the height of the surface in pixels.
+ * @param i the frame index. This is used for animations.
+ */
+__device__ void update_surface(cudaSurfaceObject_t surface, int textureWidth, int textureHeight, int i)
 {
+  //Get the pixel index
   int xPx = threadIdx.x + blockIdx.x * blockDim.x;
   int yPx = threadIdx.y + blockIdx.y * blockDim.y;
-
+  //Don't do any computation if this thread is outside of the surface bounds.
   if(xPx >= textureWidth)
     return;
   if(yPx >= textureHeight)
     return;
 
+  //Map the coordinates between 0 and 1, and make them floating-point.
   CUDAVec2 normalizedCoordinates((float)xPx / textureWidth, (float)yPx / textureHeight);
+  //This animation repeats at t=400, i.e. the circles make one full rotation at i=400.
   i%=400;
   float theta = (float)i/63.661977236758134307553505349006f;
+  
+  bool inCircle = false; //Used to set the color of the pixel.
 
-  bool inCircle = false;
-
-  //Create and find the intersection of a bunch of circles
+  //Create a bunch of circles and check if this pixel is inside any one of them.
   int numCircles = 10;
+  //For each circle
   for(int i = 0; i < numCircles; i++){
+    //Each circle is unique by its direction relative to the center of the surface (normalized coordinates (0.5,0.5))
     theta+=(float)6.283185307179586476925286766559f/numCircles;
+    //Calculate the center of the circle.
     CUDAVec2 circlePosition(0.5+0.4*cos(theta), 0.5+0.4*sin(theta));
+    //Get the distance from this pixel to the center of the circle
     CUDAVec2 v (normalizedCoordinates);
     v.subtract(circlePosition);
     float r = v.mag();
+    //If the distance from any circle's center is less than 0.1, it is in that circle.
     if(r<0.1){
       inCircle = true;
       break;
     }
-  }
+  }//End for loop
 
-
+  //Calculate the pretty colors
   float red = normalizedCoordinates.x;
   float green = 1.f - normalizedCoordinates.y;
   float blue = 1.f-normalizedCoordinates.x;
   float alpha = 1.f;
 
+  //Invert the colors if inside a circle
   if(inCircle){
     red = 1.f - red;
     green = 1.f - green;
     blue = 1.f - blue;
   }
 
-
+  //Convert each value to an unsigned byte
   uchar4 pixel = { (uint8_t)(red*255),
     (uint8_t)(green*255),
     (uint8_t)(blue*255),
     (uint8_t)(alpha*255)};
-
+  
+  //Write to the surface.
   surf2Dwrite(pixel, surface, xPx * sizeof(uchar4), yPx);
 }
 
@@ -172,8 +191,15 @@ int main(int argc, char **argv)
         windowHeight,          // Image height i.e. 480 for Kinect in standard mode
         0,                 // Border width in pixels (can either be 1 or 0)
         GL_RGBA, // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
-        GL_UNSIGNED_BYTE,  // Image data type
+        GL_UNSIGNED_BYTE,  // Image data type.
         data);        // The actual image data itself
+    //Note that the type of this texture is an RGBA UNSIGNED_BYTE type. When CUDA surfaces
+    //are synchronized with OpenGL textures, the surfaces will be of the same type.
+    //They won't know or care about their data types though, for they are all just byte arrays
+    //at heart. So be careful to ensure that any CUDA kernel that handles a CUDA surface
+    //uses it as an appropriate type. You will see that the update_surface kernel (defined 
+    //above) treats each pixel as four unsigned bytes along the X-axis: one for red, green, blue,
+    //and alpha respectively.
 
     //Create the CUDA array and texture reference
     cudaArray *bitmap_d;
@@ -210,7 +236,8 @@ int main(int argc, char **argv)
     //Documentation: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__SURFACE__OBJECT.html#group__CUDART__SURFACE__OBJECT_1g958899474ab2c5f40d233b524d6c5a01
     cudaCreateSurfaceObject(&bitmap_surface, &resDesc);
     cudaCheckError();
-  
+      
+    //Set the number of blocks to call the kernel with.
     dim3 blocks((unsigned int)ceil((float)textureWidth / THREADS_PER_BLOCK), textureHeight);
 
     //Frame counter
@@ -221,7 +248,12 @@ int main(int argc, char **argv)
       Timer stopwatch;
       //Update the texture with the CUDA kernel
       update_surface<<<blocks, THREADS_PER_BLOCK>>>(bitmap_surface, textureWidth, textureHeight, i++);
-      //Print elapsed time occasionally
+      cudaCheckError();
+      //Synchronize the CUDA surface with the OpenGL texture, so the texture has the same data as the newly written surface.
+      cudaDeviceSynchronize();
+      cudaCheckError();
+
+      //Print elapsed time occasionally to the title
       if(i%10==0){
         float fps = 1.f/stopwatch.getElapsedSeconds();
         ostringstream myString;
@@ -231,25 +263,24 @@ int main(int argc, char **argv)
         myString << " FPS)";
         glfwSetWindowTitle(window, myString.str().c_str());
       }
-      cudaCheckError();
-      cudaDeviceSynchronize();
-      cudaCheckError();
 
       //Render the results on the screen buffer
       //Clear color and depth buffers
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       //Begin drawing
       glMatrixMode(GL_MODELVIEW);     //Operate on model-view matrix
+      //Enable the use of 2D textures
       glEnable(GL_TEXTURE_2D);
       //Bind to our texture handle
       glBindTexture(GL_TEXTURE_2D, textureID);
-      //Draw a quad
+      //Draw a quad with the synchronized texture
       glBegin(GL_QUADS);
       glTexCoord2i(0, 0); glVertex2i(0, 0);
       glTexCoord2i(0, 1); glVertex2i(0, windowHeight);
       glTexCoord2i(1, 1); glVertex2i(windowWidth, windowHeight);
       glTexCoord2i(1, 0); glVertex2i(windowWidth, 0);
       glEnd();
+      //Disable the use of 2D textures.
       glDisable(GL_TEXTURE_2D);
       
       //Blit rendered contents on the screen and poll events.
