@@ -39,7 +39,7 @@ public:
  * @param textureHeight the height of the surface in pixels.
  * @param i the frame index. This is used for animations.
  */
-__device__ void update_surface(cudaSurfaceObject_t surface, int textureWidth, int textureHeight, int i)
+__global__ void update_surface(cudaSurfaceObject_t surface, int textureWidth, int textureHeight, int i)
 {
   //Get the pixel index
   int xPx = threadIdx.x + blockIdx.x * blockDim.x;
