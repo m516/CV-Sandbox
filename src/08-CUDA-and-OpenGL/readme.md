@@ -1,7 +1,7 @@
 ![Current screenshot](../../docs/screenshots/08-01.png)
 
 # Project 8: CUDA and OpenGL <!-- omit in toc -->
-This project is much like a stripped-down version of [Shadertoy](shadertoy.com), only the shaders are programmed in CUDA instead of GLSL.
+This project is much like a stripped-down version of [Shadertoy](https://www.shadertoy.com/), only the shaders are programmed in CUDA instead of GLSL.
 
 It uses a CUDA kernel to perform per-pixel processing with a CUDA surface. The surface is synchronized with an OpenGL texture that is rendered on a quad that fills an entire GLFW window.
 
