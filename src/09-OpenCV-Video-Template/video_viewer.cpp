@@ -1,4 +1,4 @@
-#include "video_viewer.h"
+#include "video_viewer.hpp"
 
 VideoViewer::VideoViewer(VideoCapture& videoCapture)
 {

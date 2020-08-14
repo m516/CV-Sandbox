@@ -1,4 +1,4 @@
-#include "mat_viewer.h"
+#include "mat_viewer.hpp"
 
 #include <imgui/imgui.h>
 

@@ -1,6 +1,6 @@
-#include "ui.h"
-#include "video_viewer.h"
-#include "algorithms/optical_flow/optical_flow_ui.h"
+#include "ui.hpp"
+#include "video_viewer.hpp"
+#include "algorithms/optical_flow/optical_flow_ui.hpp"
 
 namespace gui {
 

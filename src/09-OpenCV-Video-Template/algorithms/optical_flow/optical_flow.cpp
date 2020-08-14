@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-#include "optical_flow.h"
+#include "optical_flow.hpp"
 
 
 void computePixels(const unsigned char* const frame1, const unsigned char* const frame2, const int width, const int height, uint16_t* outputFlow){

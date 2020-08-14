@@ -1,4 +1,4 @@
-#include "optical_flow_ui.h"
+#include "optical_flow_ui.hpp"
 #include "imgui/imgui.h"
 
 #define STATUS_CALCULATE_SUCCESSFUL 0

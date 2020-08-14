@@ -2,7 +2,7 @@
 * Raytracing sandbox
 */
 
-#include "main.h"
+#include "main.hpp"
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include "optical_flow.h"
+#include "optical_flow.hpp"
 
 using namespace cv;
 

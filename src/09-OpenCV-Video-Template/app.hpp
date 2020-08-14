@@ -13,7 +13,7 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-#include "ui.h"
+#include "ui.hpp"
 
 
 namespace gui {

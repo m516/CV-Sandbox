@@ -1,7 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include "../../mat_viewer.h"
-#include "optical_flow.h"
+#include "../../mat_viewer.hpp"
+#include "optical_flow.hpp"
 
 using namespace cv;
 

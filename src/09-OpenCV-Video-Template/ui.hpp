@@ -9,8 +9,8 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "app.h"
-#include "mat_viewer.h"
+#include "app.hpp"
+#include "mat_viewer.hpp"
 
 namespace gui {
 	/*Sets the look-and-feel of the UI */
