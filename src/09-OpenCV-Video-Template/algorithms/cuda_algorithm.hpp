@@ -18,9 +18,10 @@ class CUDAVisionAlgorithm {
 public:
     void setInput(Mat& input);
     void getOutput(Mat& output);
-    virtual void process() = 0;
+    virtual bool process() = 0;
     virtual void addToGUI();
-private:
+    bool alreadyProcessed = false;
+protected:
     GpuMat d_imageInputData;
     GpuMat d_imageOutputData; 
     cv::ogl::Texture2D imageInputTexture, imageOutputTexture;;

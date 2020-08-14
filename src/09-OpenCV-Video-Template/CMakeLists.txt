@@ -19,7 +19,6 @@ set(PROJECT_SOURCES
 "ui.cpp"
 "video_viewer.cpp" 
 "algorithms/cuda_algorithm.cpp"
-"algorithms/optical_flow/optical_flow_ui.cpp"
 )
 
 # In UNIX, set PROJECT_HEADERS using the following command
@@ -34,7 +33,6 @@ set(PROJECT_HEADERS
 "util/vec3.hpp"
 "video_viewer.hpp"
 "algorithms/cuda_algorithm.hpp"
-"algorithms/optical_flow/optical_flow_ui.hpp" 
 "algorithms/optical_flow/optical_flow.hpp")
 
  set(PROJECT_CUDA

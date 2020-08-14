@@ -1,21 +1,13 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include "optical_flow.hpp"
+#include "../cuda_algorithm.hpp"
 
 using namespace cv;
 
-class OpticalFlow {
+class OpticalFlow : public CUDAVisionAlgorithm {
 public:
-	OpticalFlow();
-
-
-	bool calculateOpticalFlow(Mat& mat1, Mat& mat2);
-	bool calculateOpticalFlowWithNewFrame(Mat& newFrame);
-	bool recaulculateOpticalFlow();
-	/*frame1 and frame2 are both BGR images whose colors are 8-bits each. They must have the same dimensions for OpticalFlow calculations to work correctly*/
-	Mat frame1, frame2;
-	/*A matrix of 2D vectors*/
-	Mat flow;
+	virtual bool process();
 private:
-	bool invalid();
+	bool invalid() { return d_imageInputData.empty(); }
 };

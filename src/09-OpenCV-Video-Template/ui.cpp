@@ -1,6 +1,6 @@
 #include "ui.hpp"
 #include "video_viewer.hpp"
-#include "algorithms/optical_flow/optical_flow_ui.hpp"
+#include "algorithms/optical_flow/optical_flow.hpp"
 
 namespace gui {
 
@@ -11,7 +11,7 @@ namespace gui {
 	//Project-specific fields
 	VideoCapture videoCapture;
 	VideoViewer* videoViewer;
-	OpticalFlowUI* opticalFlowUI;
+	OpticalFlow opticalFlow;
 
 
 	void setStyle() {
@@ -136,7 +136,14 @@ namespace gui {
 		void createOpticalFlowViewer(){
 			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
 			ImGui::Begin("Optical Flow", &showVideoViewer, flags);
-			opticalFlowUI->addToGUI();
+
+			if (ImGui::Button("Add current video frame to processor")) {
+				Mat m;
+				videoCapture.retrieve(m);
+				opticalFlow.setInput(m);
+			}
+
+			opticalFlow.addToGUI();
 			ImGui::End();
 		}
 	}
@@ -165,8 +172,6 @@ namespace gui {
 		videoCapture = VideoCapture(filename);
 
 		videoViewer = new VideoViewer(videoCapture);
-
-		opticalFlowUI = new OpticalFlowUI(videoViewer->mat);
 
 	}
 }
