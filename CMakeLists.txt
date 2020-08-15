@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.10)
 
 # Define colors
 if(NOT WIN32)
@@ -43,7 +43,11 @@ endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 # Manually define a compile-time definition for the media/ directory
 set(MEDIA_DIR "${CMAKE_SOURCE_DIR}/media/")
-add_compile_definitions(MEDIA_DIRECTORY="${MEDIA_DIR}")
+if(CMAKE_VERSION VERSION_GREATER 3.12)
+    add_compile_definitions(MEDIA_DIRECTORY="${MEDIA_DIR}")
+else()
+    add_definitions("-DMEDIA_DIRECTORY=\"${MEDIA_DIR}\"")
+endif()
 message("${BoldMagenta}Media directory: ${MEDIA_DIR}${ColorReset}")
 
 # Set the macro/helper directory 

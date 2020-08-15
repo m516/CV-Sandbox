@@ -4,7 +4,12 @@ cmake_minimum_required(VERSION 3.6)
 #include_directories(../glfw)
 #add_subdirectory(../glfw glfw)
 
-add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD=1)
+
+if(CMAKE_VERSION VERSION_GREATER 3.12)
+        add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD=1)
+else()
+    add_definitions("-DIMGUI_IMPL_OPENGL_LOADER_GLAD=1")
+endif()
 
 add_library(
         imgui STATIC
