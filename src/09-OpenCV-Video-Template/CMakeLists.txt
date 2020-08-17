@@ -18,7 +18,6 @@ set(PROJECT_SOURCES
 "mat_viewer.cpp"
 "ui.cpp"
 "video_viewer.cpp" 
-"algorithms/cuda_algorithm.cpp"
 )
 
 # In UNIX, set PROJECT_HEADERS using the following command
@@ -31,12 +30,16 @@ set(PROJECT_HEADERS
 "ui.hpp"
 "util/vec2.hpp"
 "util/vec3.hpp"
-"video_viewer.hpp"
-"algorithms/cuda_algorithm.hpp"
-"algorithms/optical_flow/optical_flow.hpp")
+"video_viewer.hpp")
 
+# In UNIX, set PROJECT_HEADERS using the following command
+# find . | grep .cu
+# Delete the ./ at the beginning of each file with block selection (alt + shift in Visual Studio)
  set(PROJECT_CUDA
-"algorithms/optical_flow/optical_flow.cpp"
+"algorithms/cuda_algorithm.cuh"
+"algorithms/cuda_algorithm.cu"
+"algorithms/dummy/dummy_cuda_algorithm.cuh"
+"algorithms/dummy/dummy_cuda_algorithm.cu"
  )
 
 

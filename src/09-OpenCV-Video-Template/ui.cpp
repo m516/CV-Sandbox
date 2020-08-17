@@ -1,6 +1,7 @@
 #include "ui.hpp"
 #include "video_viewer.hpp"
-#include "algorithms/optical_flow/optical_flow.hpp"
+#include "algorithms/cuda_algorithm.cuh"
+#include "algorithms/dummy/dummy_cuda_algorithm.cuh"
 
 namespace gui {
 
@@ -11,7 +12,7 @@ namespace gui {
 	//Project-specific fields
 	VideoCapture videoCapture;
 	VideoViewer* videoViewer;
-	OpticalFlow opticalFlow;
+	CUDAVisionAlgorithm* visionAlgorithm = new DummyCUDAAlgorithm();
 
 
 	void setStyle() {
@@ -135,15 +136,31 @@ namespace gui {
 
 		void createOpticalFlowViewer(){
 			ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize;
-			ImGui::Begin("Optical Flow", &showVideoViewer, flags);
+			ImGui::Begin("Algorithm", &showVideoViewer, flags);
+
+			static bool loadPerFrame = false;
+			ImGui::Checkbox("Load per frame", &loadPerFrame);
+			if(loadPerFrame){
+				ImGui::Text("Loading per frame");
+				Mat m;
+				videoCapture.retrieve(m);
+				visionAlgorithm->setInput(m);
+			}
+
+			static bool live = false;
+			ImGui::Checkbox("Process per frame", &live);
+			if (live) {
+				ImGui::Text("Processing per frame");
+				visionAlgorithm->process();
+			}
 
 			if (ImGui::Button("Add current video frame to processor")) {
 				Mat m;
 				videoCapture.retrieve(m);
-				opticalFlow.setInput(m);
+				visionAlgorithm->setInput(m);
 			}
 
-			opticalFlow.addToGUI();
+			visionAlgorithm->addToGUI();
 			ImGui::End();
 		}
 	}
