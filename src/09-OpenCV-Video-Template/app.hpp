@@ -17,6 +17,7 @@
 
 
 namespace gui {
+	void setup();
 	void begin();
 	float estimateSystemScale();
 	GLFWwindow* getCurrentWindow();

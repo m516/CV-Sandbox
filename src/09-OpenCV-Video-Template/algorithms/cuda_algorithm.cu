@@ -114,7 +114,6 @@ void CUDAVisionAlgorithm::setInput(const Mat& input)
     }
 
     //Get the size of the Mat and place it here.
-    std::cout << "Rows: " << input.rows << std::endl;
     imageInputDimensions.width=input.cols;
     imageInputDimensions.height=input.rows;
 
@@ -127,9 +126,10 @@ void CUDAVisionAlgorithm::setInput(const Mat& input)
     //Create the output surface/texture pair
     uint8_t* outData = new uint8_t[imageOutputDimensions.width * imageOutputDimensions.height * 3];
     createTextureSurfacePair(imageOutputDimensions, outData, imageOutputTexture, d_imageOutputGraphicsResource, d_imageOutputTexture);
+    delete outData;
 
+    //Set status flags
     surfacesInitialized = true;
-
     alreadyProcessed = false;
 }
 
@@ -142,12 +142,13 @@ void CUDAVisionAlgorithm::destroyEverything(){
         //Input image CUDA surface
         cudaDestroySurfaceObject(d_imageInputTexture);
         cudaGraphicsUnmapResources(1, &d_imageInputGraphicsResource);
+        cudaGraphicsUnregisterResource(d_imageInputGraphicsResource);
         d_imageInputTexture = 0;
-
 
         //Output image CUDA surface
         cudaDestroySurfaceObject(d_imageOutputTexture);
         cudaGraphicsUnmapResources(1, &d_imageOutputGraphicsResource);
+        cudaGraphicsUnregisterResource(d_imageOutputGraphicsResource);
         d_imageOutputTexture = 0;
 
         //Input image GL texture
