@@ -82,8 +82,31 @@ void CUDAVisionAlgorithm::createTextureSurfacePair(const CUDAVisionAlgorithm::Im
 
 void CUDAVisionAlgorithm::setInput(const Mat& input)
 {
+
     //Empty Mats cause problems in textures and surfaces.
     if (input.empty()) return;
+
+
+    //Same-size images don't need texture regeneration, so skip that.
+    if(input.rows == imageInputDimensions.height && input.cols == imageInputDimensions.width){
+
+        //Use the input surface's CUDAResourceDesc to gain access to the surface data array
+        struct cudaResourceDesc resDesc;
+        memset(&resDesc, 0, sizeof(resDesc));
+        cudaGetSurfaceObjectResourceDesc(&resDesc, d_imageInputTexture);
+        cudaCheckError();
+
+        //Copy the data from the input array to the surface
+        cudaMemcpyToArray(resDesc.res.array.array, 0, 0, input.data, imageInputDimensions.width* imageInputDimensions.height*3, cudaMemcpyHostToDevice);
+        cudaCheckError();
+
+        //Set status flags
+        surfacesInitialized = true;
+        alreadyProcessed = false;
+
+        return;
+    }
+
 
     //Clear everything that originally existed in the texture/surface
     destroyEverything();
@@ -135,9 +158,6 @@ void CUDAVisionAlgorithm::setInput(const Mat& input)
 
 void CUDAVisionAlgorithm::destroyEverything(){
     if (surfacesInitialized) {
-
-        //Create a CUDAResourceDescriptor
-        struct cudaResourceDesc resDesc;
 
         //Input image CUDA surface
         cudaDestroySurfaceObject(d_imageInputTexture);
