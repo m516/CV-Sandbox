@@ -46,5 +46,13 @@ set(PROJECT_HEADERS
 # Add source to this project's executable.
 add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_CUDA})
 
+
 # Add tests and install targets if needed.
 target_link_libraries (${EXECUTABLE_NAME} glad glfw imgui ${OpenCV_LIBS}) 
+
+
+# Tests
+add_executable(T09_TEST_CUDA_CV "testMatToGLTex.cu")
+target_link_libraries (T09_TEST_CUDA_CV glad glfw ${OpenCV_LIBS}) 
+
+
