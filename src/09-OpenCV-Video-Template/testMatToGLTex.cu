@@ -7,8 +7,6 @@
 #include <cuda_gl_interop.h>
 
 #include <iostream>
-#include <opencv2\videoio.hpp>
-#include <opencv2\highgui.hpp>
 
 
 /** Macro for checking if CUDA has problems */
@@ -373,34 +371,19 @@ void showTextures(GLuint top, GLuint bottom) {
 
 
 int main() {
-    using namespace cv;
-    using namespace std;
-
     initGL();
 
-    //Load the video
-    // Get an image name 
-    std::string filename = MEDIA_DIRECTORY;
-    // MEDIA_DIRECTORY is defined in the root-level CMake script
-    filename += "CameraOrbit.MOV";
-    VideoCapture videoCapture(filename);
+    int imageWidth = windowWidth;
+    int imageHeight = windowHeight / 2;
+
+    uint8_t* imageData = new uint8_t[imageWidth * imageHeight * 3];
 
     Processor p;
 
-    while (true)
+    while (!glfwWindowShouldClose(currentGLFWWindow))
     {
-        Mat frame;
-        bool bSuccess = videoCapture.read(frame); // read a new frame from video 
-
-        //Breaking the while loop at the end of the video
-        if (bSuccess == false)
-        {
-            cout << "Found the end of the video" << endl;
-            break;
-        }
-
         //Process the image here
-        p.setInput(frame.data, frame.cols, frame.rows);
+        p.setInput(imageData, imageWidth, imageHeight);
         p.processData();
         showTextures(p.getInputTexture(), p.getOutputTexture());
     }
