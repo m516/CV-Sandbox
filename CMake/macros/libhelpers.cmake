@@ -13,3 +13,11 @@ macro (disable_if_opencv_not_found)
         return()
     endif()
 endmacro()
+
+macro (disable_if_pthread_not_found)
+    #Check if CUDA is unavailable
+    if(NOT Threads_FOUND)
+        message("${BoldRed}             Project can't be built without Pthreads${ColorReset}")
+        return()
+    endif()
+endmacro()
