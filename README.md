@@ -1,5 +1,10 @@
-# Computer Vision Sandbox
 ![C/C++ CI](https://github.com/m516/CV-Sandbox/workflows/C/C++%20CI/badge.svg)
+![issues](https://img.shields.io/github/issues/m516/CV-Sandbox)
+![forks](https://img.shields.io/github/forks/m516/CV-Sandbox)
+![stars](https://img.shields.io/github/stars/m516/CV-Sandbox)
+![license](https://img.shields.io/github/license/m516/CV-Sandbox)
+
+# Computer Vision Sandbox
 
 ![Project 06: Raytracing](docs/screenshots/06-02.png)
 
