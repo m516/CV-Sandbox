@@ -2,11 +2,38 @@
 
 #include <iostream>
 #include <math.h>
+#include "conv4D_impl.h"
 
 
+#ifdef CUDA_SUPPORT
+conv_ret conv4d_convolve_cuda_discrete(conv4d_layer layer, featuremap_3d input, featuremap_3d output){
+    //Benchmarking setup
+    conv_ret r;
+    time_t start_t, end_t;
+    time(&start_t);
+    //TODO stub
+    //End benchmarking         
+    time(&end_t);
+    r.time_elapsed = difftime(end_t, start_t);
+    return r;
+}
+conv_ret conv4d_convolve_cuda_CUDNN(conv4d_layer layer, featuremap_3d input, featuremap_3d output){
+    //Benchmarking setup
+    conv_ret r;
+    time_t start_t, end_t;
+    time(&start_t);
+    //TODO stub
+    //End benchmarking         
+    time(&end_t);
+    r.time_elapsed = difftime(end_t, start_t);
+    return r;
+}
+#endif
+
+/*
 // function to add the elements of two arrays
 __global__
-void add(int n, float* x, float* y)
+void doStuff(int n, float* x, float* y)
 {  
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x;
@@ -51,3 +78,4 @@ int main(void)
 
     return 0;
 }
+*/

@@ -121,6 +121,9 @@ include_directories(extern)
 
 message("${BoldYellow}Library search complete!${ColorReset}")
 
+message("${BoldYellow}Checking OpenMP support${ColorReset}")
+include(FindOpenMP)
+
 #CUDA
 message("${BoldYellow}Checking if CUDA files can be compiled${ColorReset}")
 option(USE_CUDA "Attempt to use CUDA. If disaled, projects that require CUDA can't build. Enabled by default" ON)
