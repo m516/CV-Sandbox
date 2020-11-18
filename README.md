@@ -1,4 +1,4 @@
-![C/C++ CI](https://github.com/m516/CV-Sandbox/workflows/C/C++%20CI/badge.svg)
+![Build](https://github.com/m516/CV-Sandbox/workflows/Build/badge.svg)
 ![issues](https://img.shields.io/github/issues/m516/CV-Sandbox)
 ![forks](https://img.shields.io/github/forks/m516/CV-Sandbox)
 ![stars](https://img.shields.io/github/stars/m516/CV-Sandbox)
