@@ -5,7 +5,7 @@ ARG VARIANT="buster"
 FROM mcr.microsoft.com/vscode/devcontainers/cpp:0-${VARIANT}
 
 # Install additional packages.
- RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends xorg-dev libopencv-dev
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+     && apt-get -y install --no-install-recommends cmake make gcc g++ xorg-dev libopencv-dev
 
-# TODO review over break
+# TODO review over break. Is this a good place to build the project?
