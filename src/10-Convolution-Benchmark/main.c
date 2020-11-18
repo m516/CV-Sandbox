@@ -152,8 +152,18 @@ int main() {
 	print_barrier();
 	*/
 
+	//Threads
+	#ifdef THREAD_SUPPORT
+	//Naive OpenMP Benchmarking
+	printf("\PThread Simple Algorithm ");
+	BENCHMARK_ALGORITHM(conv4d_convolve_threads_naive, layer, input, output);
+	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
+	print_barrier();
+	#endif
+
 	//OpenMP
 	#ifdef OMP_SUPPORT
+	printf("\nNumber of processors: %d", omp_get_num_procs());
 	omp_set_num_threads(omp_get_num_procs());
 
 	//Naive OpenMP Benchmarking
