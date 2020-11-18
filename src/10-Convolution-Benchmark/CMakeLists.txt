@@ -54,7 +54,7 @@ else()
     message("${Red}             OpenMP not found${ColorReset}")
 endif()
 #Threads
-if(Threads_FOUND)
+if(CMAKE_USE_PTHREADS_INIT)
     message("${Green}             Threads found${ColorReset}")
     #THERAD_SUPPORT already defined at root of project
 else()
@@ -70,3 +70,7 @@ endif()
 add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_CUDA})
 # Compile the CUDA files separately. They can still be linked.
 set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+# Link to libraries
+# Threads
+target_link_libraries(${EXECUTABLE_NAME} Threads::Threads)
+target_link_libraries(${EXECUTABLE_NAME} OpenMP::OpenMP_C)

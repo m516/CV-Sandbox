@@ -1,17 +1,18 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 #include "conv4D_impl.h"
 
 conv_ret conv4d_convolve_serial_naive(conv4d_layer layer, featuremap_3d input, featuremap_3d output)
 {
-    //Reset memory
-    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
     
     //Benchmarking setup
-    conv_ret r;
+    conv_ret ret;
     clock_t start_t, end_t;
     start_t = clock();
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
 
     //Begin convolution
     for (size_t n = 0; n < output.batches; n++)
@@ -49,22 +50,20 @@ conv_ret conv4d_convolve_serial_naive(conv4d_layer layer, featuremap_3d input, f
     
     //End benchmarking         
     end_t = clock();
-    r.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    return r;
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    return ret;
 }
 
 conv_ret conv4d_convolve_serial_optimized(conv4d_layer layer, featuremap_3d input, featuremap_3d output, const size_t block_size)
 {
 
-    //Reset memory
-    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
 
     //Benchmarking setup
-    conv_ret r;
+    conv_ret ret;
     clock_t start_t, end_t;
     start_t = clock();
-
-    unsigned int iteration = 0;
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
 
     //Convolve
     size_t n, s, q;
@@ -108,40 +107,128 @@ conv_ret conv4d_convolve_serial_optimized(conv4d_layer layer, featuremap_3d inpu
 
     //End benchmarking         
     end_t = clock();
-    r.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    return r;
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    return ret;
 
 }
 
 #ifdef THREAD_SUPPORT
+
+#include <pthread.h>
+
+size_t iteration = 0; 
+pthread_mutex_t* mutex; //To prevent multiple threads from modifying threadID
+pthread_t threads[THREAD_SUPPORT];
+conv4d_layer g_t_layer;
+featuremap_3d g_t_input, g_t_output;
+
+//Thread function to process a single output channel in "o" from "i" with "l"
+void * conv4d_convolve_threads_naive_helper(void* arg) {
+    //Don't worry, we'll break out of this
+    while (1) {
+        //Grab the value of "iteration" and chuck it in "m".
+        //Then increment "iteration"
+
+        //Locks the mutex
+        pthread_mutex_lock(mutex);
+        //Grab the output channel to work on
+        size_t q = iteration++;
+        //Now unlock the mutex
+        pthread_mutex_unlock(mutex);
+        //Now we have an output channel "m" that hasn't been processed yet.
+        
+        //Stop if there are no more channels left to process
+        if (q >= g_t_output.channels) {
+            break;
+        }
+
+            //Begin convolution
+    for (size_t n = 0; n < g_t_output.batches; n++)
+        for (size_t p = 0; p < g_t_output.width; p++)
+            for (size_t s = 0; s < g_t_layer.kernel_height; s++)
+                for (size_t r = 0; r < g_t_layer.kernel_width; r++)
+                    for (size_t c = 0; c < g_t_input.channels; c++)
+                        for (size_t m = 0; m < g_t_output.channels; m++)
+                        {
+                            size_t i_index = n * g_t_input.channels * g_t_input.width * g_t_input.height
+                                            + (g_t_layer.stride_size * q + s) * g_t_input.channels * g_t_input.width
+                                            + (g_t_layer.stride_size * p + r) * g_t_input.channels
+                                            + c;
+                            size_t o_index = n * g_t_output.channels * g_t_output.width * g_t_output.height
+                                            + q * g_t_output.channels * g_t_output.width
+                                            + p * g_t_output.channels
+                                            + m;
+                            size_t f_index = s * g_t_layer.output_channels * g_t_layer.input_channels * g_t_layer.kernel_width
+                                            + r * g_t_layer.output_channels * g_t_layer.input_channels
+                                            + c * g_t_layer.output_channels
+                                            + m;
+                            float i = g_t_input.data[i_index];
+                            float f = g_t_layer.weights[f_index];
+                            g_t_output.data[o_index] += i * f;
+                            //printf("%zu %zu %zu\n", i_index, f_index, o_index);
+                        }
+
+    //Bias
+    for (size_t n = 0; n < g_t_output.batches; n++)
+        for (size_t q = 0; q < g_t_output.height; q++)
+            for (size_t p = 0; p < g_t_output.width; p++)
+                for (size_t m = 0; m < g_t_output.channels; m++)
+                    *(featuremap_3d_addr_of(g_t_output, n, m, p, q)) += g_t_layer.bias[m];
+
+        //printf("Hello from %d\n", m);
+    }//End while
+    return NULL;
+}//End process
+
 conv_ret conv4d_convolve_threads_naive(conv4d_layer layer, featuremap_3d input, featuremap_3d output)
 {
     //Benchmarking setup
-    conv_ret r;
+    conv_ret ret;
     clock_t start_t, end_t;
     start_t = clock();
-    //TODO stub
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
+    //Get everything ready
+    iteration = 0;
+    g_t_layer = layer;
+    g_t_input = input;
+    g_t_output = output;
+    if (mutex == NULL) {
+        pthread_mutex_init(mutex, NULL);
+    }
+
+    //Start 'em up
+    for (int i = 0; i < THREAD_SUPPORT; i++) {
+        pthread_create(&threads[i], NULL, conv4d_convolve_threads_naive_helper, NULL);
+    }
+    //Let 'em all process and wait for them to finish
+    for (int i = 0; i < THREAD_SUPPORT; i++) {
+        pthread_join(threads[i], NULL);
+    }
     //End benchmarking         
     end_t = clock();
-    r.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    return r;
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+
+    return ret;
 }
 conv_ret conv4d_convolve_threads_optimized(conv4d_layer layer, featuremap_3d input, featuremap_3d output, const size_t block_size)
 {
     //Benchmarking setup
-    conv_ret r;
+    conv_ret ret;
     time_t start_t, end_t;
     time(&start_t);
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
     //TODO stub
     //End benchmarking         
     end_t = clock();
-    r.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    return r;
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    return ret;
 }
 #endif
 
 #ifdef OMP_SUPPORT
-
+#include <omp.h>
 /*
 OpenMP is a framework. Most issues stem from user
 OpenMP is too easy. Sometimes ideas are easy and quick to implement. 
@@ -288,26 +375,82 @@ Allocate memory in random threads and hope for the best
 conv_ret conv4d_convolve_OpenMP_naive(conv4d_layer layer, featuremap_3d input, featuremap_3d output)
 {
     //Benchmarking setup
-    conv_ret r;
-    time_t start_t, end_t;
-    time(&start_t);
-    //TODO stub
+    conv_ret ret;
+    clock_t start_t, end_t;
+    start_t = clock();
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
+
+    float* i_array = input.data;
+    float* fw_array = layer.weights;
+    float* fb_array = layer.bias;
+    float* o_array = output.data;
+
+
+#pragma omp parallel default(none) firstprivate(i_array, fw_array, fb_array, o_array, layer, input, output)
+    {
+    //Iterators
+    long n, q, p, s, r, c, m;
+
+#pragma omp for schedule(static) collapse(2) nowait 
+    //Begin convolution
+    for (n = 0; n < output.batches; n++)
+        for (q = 0; q < output.height; q++)
+            for (p = 0; p < output.width; p++)
+                for (s = 0; s < layer.kernel_height; s++)
+                    for (r = 0; r < layer.kernel_width; r++)
+                        for (c = 0; c < input.channels; c++)
+                            for (m = 0; m < output.channels; m++)
+                            {
+                                size_t i_index = n * input.channels * input.width * input.height
+                                    + (layer.stride_size * q + s) * input.channels * input.width
+                                    + (layer.stride_size * p + r) * input.channels
+                                    + c;
+                                size_t o_index = n * output.channels * output.width * output.height
+                                    + q * output.channels * output.width
+                                    + p * output.channels
+                                    + m;
+                                size_t f_index = s * layer.output_channels * layer.input_channels * layer.kernel_width
+                                    + r * layer.output_channels * layer.input_channels
+                                    + c * layer.output_channels
+                                    + m;
+                                o_array[o_index] += i_array[i_index] * fw_array[f_index];
+                            }
+
+#pragma omp for schedule(static)
+    //Bias
+    for (n = 0; n < output.batches; n++)
+        for (q = 0; q < output.height; q++)
+            for (p = 0; p < output.width; p++)
+                for (m = 0; m < output.channels; m++){
+                    size_t o_index = n * output.channels * output.width * output.height
+                                    + q * output.channels * output.width
+                                    + p * output.channels
+                                    + m;
+                    o_array[o_index] += fb_array[m];
+                }
+    }//End parallel region
+
+
+
     //End benchmarking         
-    time(&end_t);
-    r.time_elapsed = difftime(end_t, start_t);
-    return r;
+    end_t = clock();
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    return ret;
 }
 conv_ret conv4d_convolve_OpenMP_optimized(conv4d_layer layer, featuremap_3d input, featuremap_3d output, const size_t block_size)
 {
     //Benchmarking setup
-    conv_ret r;
-    time_t start_t, end_t;
-    time(&start_t);
+    conv_ret ret;
+    clock_t start_t, end_t;
+    start_t = clock();
+    //Reset memory
+    memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
     //TODO stub
     //End benchmarking         
-    time(&end_t);
-    r.time_elapsed = difftime(end_t, start_t);
-    return r;
+    end_t = clock();
+    ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    return ret;
 }
 
 #endif

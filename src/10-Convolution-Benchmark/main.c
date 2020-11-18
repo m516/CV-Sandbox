@@ -15,7 +15,27 @@
 #   include <unistd.h>
 #endif
 
+
+#ifdef OMP_SUPPORT
+#include <omp.h>
+#endif
+#ifdef THREAD_SUPPORT
+#include <pthread.h>
+#endif
+
 #define TRIALS 10
+
+#define BENCHMARK_ALGORITHM(algo_name, ...) { \
+	double t = 0; \
+	conv_ret r; \
+	for (int i = -1; i < TRIALS; i++) { \
+		r = algo_name ( __VA_ARGS__ ); \
+		if (i < 0) continue; \
+		t += r.time_elapsed; \
+	} \
+	t /= TRIALS; \
+	printf("%lf", t); \
+}                                                   \
 
 
 /**
@@ -31,17 +51,49 @@ FILE* open_file(const char* filename) {
 	#if _MSC_VER && !__INTEL_COMPILER
 	errno_t err = fopen_s(&f, filename, "rb");
 	if (err) {
-		printf_s("Failed to read file. Error code: %d\n", err);
+		printf_s("\nFailed to read file. Error code: %d\n", err);
 		exit(1);
 	}
 	#else
 	f = fopen(filename, "rb");
+	if (f==NULL) {
+		printf("\nFailed to read file");
+		exit(1);
+	}
 	#endif
 
 
 	return f;
 }
 
+
+void print_barrier() {
+	printf("\n-------------------------------------------------\n\n");
+}
+
+void print_validation(featuremap_3d fmap, const char* comparison_filename) {
+	//Print extra new line in case it hasn't been printed yet.
+	printf("\n");
+
+	//Activation
+	featuremap_3d_activate_ReLU(fmap);
+
+	//Print off first 25 elements of feature map
+	//for (int i = 0; i < 25; i++) {
+	//	printf("Element %7d: %1.3f\n", i, output.data[i]);
+	//}
+	//for (int i = featuremap_3d_size(output) - 25; i <= featuremap_3d_size(output); i++) {
+	//	printf("Element %7d: %1.3f\n", i, output.data[i]);
+	//}
+
+	//Compare
+	//Load the feature map from a file
+	FILE* test_file = open_file(comparison_filename);
+	featuremap_3d_floating_error e = featuremap_3d_compare_with_file(fmap, test_file);
+	fclose(test_file);
+	//Print
+	featuremap_3d_print_error_information(e);
+}
 
 
 
@@ -62,7 +114,6 @@ int main() {
 	featuremap_3d_load_from_file(&input, input_file);
 	fclose(input_file);
 
-
 	//Create the convolutional layer
 	conv4d_layer layer = {
 		.input_channels = input.channels,
@@ -72,7 +123,6 @@ int main() {
 		.kernel_height = 5
 	};
 
-
 	//Load the weights and biases from files
 	FILE* weight_file = open_file("dnn/Test_Input0/conv2_weights.bin");
 	FILE* bias_file = open_file("dnn/Test_Input0/conv2_biases.bin");
@@ -80,63 +130,41 @@ int main() {
 	fclose(weight_file);
 	fclose(bias_file);
 
-	//Print off first 25 elements of feature map
-	//for (int i = 0; i < 25; i++) {
-	//	printf("Element %7d: %1.3f\n", i, layer.weights[i]);
-	//}
-
 	//Generate output feature map
 	featuremap_3d output = conv4d_create_output(layer, input);
 
-	//Benchmarking
-	//Naive Benchmarking
-	printf("Naive Benchmarking\n");
-	double t = 0; //Total time
-	conv_ret r;
-	for(int i = -1; i < TRIALS; i ++){
-		r = conv4d_convolve_serial_naive(layer, input, output);
-		//Ignore first trial
-		if(i<0) continue;
-		t += r.time_elapsed;
-	}
-	t /= TRIALS;
-	printf("%lf\n", t);
-
-	//Optimized Benchmarking
-	printf("Optimized Benchmarking\n");
-	printf("Block Size\tAvg. Time\n");
-	for(int block_size = 1; block_size < 65; block_size ++){
-		t = 0; //Total time
-		for(int i = -1; i < TRIALS; i ++){
-			r = conv4d_convolve_serial_optimized(layer, input, output, block_size);
-			//Ignore first trial
-			if(i<0) continue;
-			t += r.time_elapsed;
-		}
-		t /= TRIALS;
-		printf("%d\t%lf\n", block_size, t);
-	}
-
 	
+	//Benchmarking
+	//Naive Serial Benchmarking
+	printf("\nSerial Simple Algorithm: ");
+	BENCHMARK_ALGORITHM(conv4d_convolve_serial_naive, layer, input, output);
+	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
+	print_barrier();
 
-	//Activation
-	featuremap_3d_activate_ReLU(output);
+	/*
+	//Optimized Serial Benchmarking
+	printf("\nSerial Tiled Algorithm\nBlock Size\tAvg. Time");
+	for(int block_size = 1; block_size < 65; block_size ++){
+		printf("\n\t%d\t", block_size);
+		BENCHMARK_ALGORITHM(conv4d_convolve_serial_optimized, layer, input, output, block_size);
+	}
+	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
+	print_barrier();
+	*/
 
-	//Print off first 25 elements of feature map
-	//for (int i = 0; i < 25; i++) {
-	//	printf("Element %7d: %1.3f\n", i, output.data[i]);
-	//}
-	//for (int i = featuremap_3d_size(output) - 25; i <= featuremap_3d_size(output); i++) {
-	//	printf("Element %7d: %1.3f\n", i, output.data[i]);
-	//}
+	//OpenMP
+	#ifdef OMP_SUPPORT
+	omp_set_num_threads(omp_get_num_procs());
 
-	//Compare
-	//Load the feature map from a file
-	FILE* test_file = open_file("dnn/Test_Input0/layer_1_output.bin");
-	featuremap_3d_floating_error e = featuremap_3d_compare_with_file(output, test_file);
-	fclose(test_file);
-	//Print
-	featuremap_3d_print_error_information(e);
+	//Naive OpenMP Benchmarking
+	printf("\nOpenMP Simple Algorithm ");
+	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_naive, layer, input, output);
+	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
+	print_barrier();
+
+
+	#endif
+
 
 	return 0;
 }
