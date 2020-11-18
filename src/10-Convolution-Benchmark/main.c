@@ -154,6 +154,7 @@ int main() {
 
 	//Threads
 	#ifdef THREAD_SUPPORT
+	//TODO fix seg fault
 	//Naive OpenMP Benchmarking
 	printf("\PThread Simple Algorithm ");
 	BENCHMARK_ALGORITHM(conv4d_convolve_threads_naive, layer, input, output);
