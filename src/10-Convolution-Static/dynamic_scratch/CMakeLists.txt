@@ -1,7 +1,7 @@
 ﻿# CMakeLists.txt
 
 # This is the name of the executable
-set(EXECUTABLE_NAME 10_CONVOLUTION_BENCHMARK)
+set(EXECUTABLE_NAME 11_CONVOLUTION_BENCHMARK)
 
 
 include(CheckIncludeFiles)
@@ -73,4 +73,4 @@ set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 # Link to libraries
 # Threads
 target_link_libraries(${EXECUTABLE_NAME} Threads::Threads)
-target_link_libraries(${EXECUTABLE_NAME} OpenMP::OpenMP_C)
+target_link_libraries(${EXECUTABLE_NAME} OpenMP::OpenMP_CXX)

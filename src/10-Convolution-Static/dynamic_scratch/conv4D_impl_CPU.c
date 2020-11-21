@@ -117,7 +117,7 @@ conv_ret conv4d_convolve_serial_optimized(conv4d_layer layer, featuremap_3d inpu
 #include <pthread.h>
 
 size_t iteration = 0; 
-pthread_mutex_t* mutex; //To prevent multiple threads from modifying threadID
+pthread_mutex_t* mutex = NULL; //To prevent multiple threads from modifying threadID
 pthread_t threads[THREAD_SUPPORT];
 conv4d_layer g_t_layer;
 featuremap_3d g_t_input, g_t_output;
@@ -194,6 +194,7 @@ conv_ret conv4d_convolve_threads_naive(conv4d_layer layer, featuremap_3d input, 
     g_t_input = input;
     g_t_output = output;
     if (mutex == NULL) {
+        mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t));
         pthread_mutex_init(mutex, NULL);
     }
 
@@ -392,7 +393,7 @@ conv_ret conv4d_convolve_OpenMP_naive(conv4d_layer layer, featuremap_3d input, f
     //Iterators
     long n, q, p, s, r, c, m;
 
-#pragma omp for schedule(static) collapse(2) nowait 
+#pragma omp for schedule(static) collapse(7) nowait 
     //Begin convolution
     for (n = 0; n < output.batches; n++)
         for (q = 0; q < output.height; q++)
@@ -440,13 +441,75 @@ conv_ret conv4d_convolve_OpenMP_naive(conv4d_layer layer, featuremap_3d input, f
 }
 conv_ret conv4d_convolve_OpenMP_optimized(conv4d_layer layer, featuremap_3d input, featuremap_3d output, const size_t block_size)
 {
+
     //Benchmarking setup
     conv_ret ret;
     clock_t start_t, end_t;
     start_t = clock();
     //Reset memory
     memset(output.data, 0, featuremap_3d_size(output) * sizeof(float));
-    //TODO stub
+
+    
+
+    float* i_array = input.data;
+    float* fw_array = layer.weights;
+    float* fb_array = layer.bias;
+    float* o_array = output.data;
+
+#pragma omp parallel default(none) firstprivate(i_array, fw_array, fb_array, o_array, layer, input, output, block_size)
+    {
+    //Iterators
+    long n0, q0, s0, p, r, c, m, n1, q1, s1; 
+
+    //Convolve
+    size_t n, s, q;
+    for (n0 = 0; n0 < output.batches; n0 += block_size)
+        for (q0 = 0; q0 < output.height; q0 += block_size)
+            for (s0 = 0; s0 < layer.kernel_height; s0+=block_size)
+                for (p = 0; p < output.width; p++)
+                    for (r = 0; r < layer.kernel_width; r++)
+                        for (c = 0; c < input.channels; c++)
+                            for (m = 0; m < output.channels; m++)
+                                //Blocking over n, q, and p
+                                #pragma omp for schedule(static) collapse(3) nowait
+                                for (n1 = 0; n1 < block_size; n1++){
+                                    for (q1 = 0; q1 < block_size; q1++){
+                                        for (s1 = 0; s1 < block_size; s1++){
+                                            if((q=q0+q1) >= output.height) continue;
+                                            if((n=n0+n1) >= output.batches) continue;
+                                            if((s=s0+s1) >= layer.kernel_height) continue;
+                                            size_t i_index = n * input.channels * input.width * input.height
+                                                            + (layer.stride_size * q + s) * input.channels * input.width
+                                                            + (layer.stride_size * p + r) * input.channels
+                                                            + c;
+                                            size_t o_index = n * output.channels * output.width * output.height
+                                                            + q * output.channels * output.width
+                                                            + p * output.channels
+                                                            + m;
+                                            size_t f_index = s * layer.output_channels * layer.input_channels * layer.kernel_width
+                                                            + r * layer.output_channels * layer.input_channels
+                                                            + c * layer.output_channels
+                                                            + m;
+                                            float i = input.data[i_index];
+                                            float f = layer.weights[f_index];
+                                            output.data[o_index] += i * f;
+                                            //printf("%I32d %zu %zu %zu\n", iteration++, i_index, f_index, o_index);
+                                        }
+                                    }
+                                }
+                                            
+
+    //Bias
+    #pragma omp for schedule(static) collapse(4) nowait
+    for (size_t n = 0; n < output.batches; n++)
+        for (size_t q = 0; q < output.height; q++)
+            for (size_t p = 0; p < output.width; p++)
+                for (size_t m = 0; m < output.channels; m++)
+                    *(featuremap_3d_addr_of(output, n, m, p, q)) += layer.bias[m];
+
+    }//End parallel region
+
+
     //End benchmarking         
     end_t = clock();
     ret.time_elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;

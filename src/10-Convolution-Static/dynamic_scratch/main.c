@@ -33,7 +33,6 @@
 		if (i < 0) continue; \
 		t += r.time_elapsed; \
 	} \
-	t /= TRIALS; \
 	printf("%lf", t); \
 }                                                   \
 
@@ -109,6 +108,8 @@ int main() {
 		.data = 0
 	};
 
+	
+
 	//Load the feature map from a file
 	FILE* input_file = open_file("dnn/Test_Input0/layer_0_output.bin");
 	featuremap_3d_load_from_file(&input, input_file);
@@ -134,6 +135,7 @@ int main() {
 	featuremap_3d output = conv4d_create_output(layer, input);
 
 	
+	
 	//Benchmarking
 	//Naive Serial Benchmarking
 	printf("\nSerial Simple Algorithm: ");
@@ -141,26 +143,27 @@ int main() {
 	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
 	print_barrier();
 
-	/*
+	
 	//Optimized Serial Benchmarking
 	printf("\nSerial Tiled Algorithm\nBlock Size\tAvg. Time");
-	for(int block_size = 1; block_size < 65; block_size ++){
+	for(int block_size = 1; block_size < 16; block_size ++){
 		printf("\n\t%d\t", block_size);
 		BENCHMARK_ALGORITHM(conv4d_convolve_serial_optimized, layer, input, output, block_size);
 	}
 	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
 	print_barrier();
-	*/
+	
 
 	//Threads
 	#ifdef THREAD_SUPPORT
-	//TODO fix seg fault
 	//Naive OpenMP Benchmarking
-	printf("\PThread Simple Algorithm ");
+	printf("\nPThread Simple Algorithm ");
 	BENCHMARK_ALGORITHM(conv4d_convolve_threads_naive, layer, input, output);
 	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
 	print_barrier();
 	#endif
+
+	
 
 	//OpenMP
 	#ifdef OMP_SUPPORT
@@ -170,6 +173,15 @@ int main() {
 	//Naive OpenMP Benchmarking
 	printf("\nOpenMP Simple Algorithm ");
 	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_naive, layer, input, output);
+	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
+	print_barrier();
+
+	//Tiled OpenMP Benchmarking
+	printf("\nOpenMP Tiled Algorithm\nBlock Size\tAvg. Time");
+	for(int block_size = 1; block_size < 16; block_size ++){
+		printf("\n\t%d\t", block_size);
+		BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_optimized, layer, input, output, block_size);
+	}
 	print_validation(output, "dnn/Test_Input0/layer_1_output.bin");
 	print_barrier();
 

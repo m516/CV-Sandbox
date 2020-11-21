@@ -24,7 +24,7 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
-project ("CV-Sandbox")
+project ("CV-Sandbox" C CXX)
 
 #Manually place all binaries into a folder under bin/
 set(BUILD_FULL_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/)
@@ -130,9 +130,11 @@ include(FindOpenMP)
 if(OpenMP_FOUND)
     if(OpenMP_C_FOUND)
         message("-- C version: ${OpenMP_C_VERSION}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     endif()
     if(OpenMP_CXX_FOUND)
         message("-- C++ version: ${OpenMP_CXX_VERSION}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     endif()
 endif()
 
