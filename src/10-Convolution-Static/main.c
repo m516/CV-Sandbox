@@ -67,10 +67,23 @@ int main() {
 	conv4d_data_load();
 
 	//BENCHMARK_ALGORITHM(conv4d_convolve_serial_naive);
-	BENCHMARK_ALGORITHM(conv4d_convolve_serial_discrete);
+	//BENCHMARK_ALGORITHM(conv4d_convolve_serial_discrete);
 	//for(int i = 1; i < 10; i++)
-	//	BENCHMARK_ALGORITHM(conv4d_convolve_serial_tiled, 1);
+	//	BENCHMARK_ALGORITHM(conv4d_convolve_serial_tiled, i);
+
+	#ifdef THREAD_SUPPORT
 	BENCHMARK_ALGORITHM(conv4d_convolve_threads_discrete);
+	//for(int i = 1; i < 10; i++)
+	//	BENCHMARK_ALGORITHM(conv4d_convolve_threads_tiled, i);
+	#endif
+	#ifdef OMP_SUPPORT
+	omp_set_num_threads(THREAD_SUPPORT);
+	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_discrete);
+	for(int i = 1; i < 10; i++)
+		BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_tiled, i);
+	#endif
+
+
 }
 
 
