@@ -237,10 +237,12 @@ void conv4d_convolve_OpenMP_tiled(int block_size){
     //Reset memory
     memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
 
+    int n, q0, p0, s, r, c, m, q1, p1, q, p;
+
     //Begin convolution
-    #pragma omp parallel default(none) shared(output, input, layer) firstprivate(block_size)
+    #pragma omp parallel default(none) shared(output, input, layer) firstprivate(block_size) private(n, q0, p0, s, r, c, m, q1, p1, q, p)
     {
-        int n, q0, p0, s, r, c, m, q1, p1, q, p;
+        
         #pragma omp for schedule(static) collapse(7) nowait
         for (n = 0; n < OUTPUT_BATCHES; n++)
             for (q0 = 0; q0 < OUTPUT_HEIGHT; q0+=block_size)
@@ -263,10 +265,10 @@ void conv4d_convolve_OpenMP_tiled(int block_size){
 
         //Bias and activation function (ReLU)
         #pragma omp for schedule(static) collapse(4) nowait
-        for (size_t n = 0; n < OUTPUT_BATCHES; n++)
-            for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
-                for (size_t p = 0; p < OUTPUT_WIDTH; p++)
-                    for (size_t m = 0; m < OUTPUT_CHANNELS; m++){
+        for (n = 0; n < OUTPUT_BATCHES; n++)
+            for (q = 0; q < OUTPUT_HEIGHT; q++)
+                for (p = 0; p < OUTPUT_WIDTH; p++)
+                    for (m = 0; m < OUTPUT_CHANNELS; m++){
                         output.data[n][q][p][m] += layer.bias[m];
                         if(output.data[n][q][p][m] < 0) output.data[n][q][p][m] = 0;
                     }
