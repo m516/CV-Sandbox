@@ -1,53 +1,42 @@
-﻿//#include "HelloCUDA.h"
+﻿#include <stdio.h>
 
-#include <iostream>
-#include <math.h>
+#define cudaCheckError() { \
+    cudaError_t err = cudaGetLastError(); \
+    if(err != cudaSuccess) { \
+      printf("Cuda error: %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+      exit(1); \
+    } \
+  }
 
+struct Test {
+    char array[5];
+};
 
-// function to add the elements of two arrays
-__global__
-void add(int n, float* x, float* y)
-{  
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
-    int stride = blockDim.x * gridDim.x;
-    for (int i = index; i < n; i += stride)
-      y[i] = x[i] + y[i];
+__device__ Test dev_test; //dev_test is now global, statically allocated, and one instance of the struct
+
+__global__ void kernel() {
+    for(int i=0; i < 5; i++) {
+        printf("Kernel[0][i]: %c \n", dev_test.array[i]);
+    }
 }
 
-int main(void)
-{
-    int N = 1 << 20; // 1M elements
 
-    float *x, *y;
+int main(void) {
 
-    // Allocate Unified Memory – accessible from CPU or GPU
-    cudaMallocManaged(&x, N * sizeof(float));
-    cudaMallocManaged(&y, N * sizeof(float));
+    int size = 5;
+    Test test; //test is now statically allocated and one instance of the struct
 
-    // initialize x and y arrays on the host
-    for (int i = 0; i < N; i++) {
-        x[i] = 1.0f;
-        y[i] = 2.0f;
-    }
+    char temp[] = { 'a', 'b', 'c', 'd' , 'e' };
+    memcpy(test.array, temp, size * sizeof(char));
 
-    // Run kernel on 1M elements on the GPU
-    int blockSize = 256;
-    int numBlocks = (N + blockSize - 1) / blockSize;
-    add<<<numBlocks, blockSize>>>(N, x, y);
-    add<<<numBlocks, blockSize>>>(N, x, y);
-
-    // Wait for GPU to finish before accessing on host
+    cudaCheckError();
+    cudaMemcpyToSymbol(dev_test, &test, sizeof(Test));
+    cudaCheckError();
+    kernel<<<1, 1>>>();
+    cudaCheckError();
     cudaDeviceSynchronize();
+    cudaCheckError();
 
-    // Check for errors (all values should be 3.0f)
-    float maxError = 0.0f;
-    for (int i = 0; i < N; i++)
-        maxError = fmax(maxError, fabs(y[i] - 3.0f));
-    std::cout << "Max error: " << maxError << std::endl;
-
-    // Free memory
-    cudaFree(x);
-    cudaFree(y);
-
+    //  memory free
     return 0;
 }

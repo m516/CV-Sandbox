@@ -9,7 +9,7 @@
 
 void conv4d_convolve_serial_naive(){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
     //Begin convolution
     for (size_t n = 0; n < OUTPUT_BATCHES; n++)
@@ -27,7 +27,7 @@ void conv4d_convolve_serial_naive(){
 }
 void conv4d_convolve_serial_discrete(){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
     //Begin convolution
     for (size_t n = 0; n < OUTPUT_BATCHES; n++)
@@ -57,7 +57,7 @@ void conv4d_convolve_serial_discrete(){
 
 void conv4d_convolve_serial_tiled(int block_size){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
     //Begin convolution
     for (size_t n = 0; n < OUTPUT_BATCHES; n++)
@@ -69,10 +69,10 @@ void conv4d_convolve_serial_tiled(int block_size){
                             for (size_t c = 0; c < INPUT_CHANNELS; c++)
                                 for(size_t q1 = 0; q1 < block_size; q1++){
                                     size_t q=q0+q1;
-                                    if(q>OUTPUT_HEIGHT) break;
+                                    if(q>=OUTPUT_HEIGHT) break;
                                     for(size_t p1 = 0; p1 < block_size; p1++){
                                         size_t p=p0+p1;
-                                        if(p>OUTPUT_WIDTH)  break;
+                                        if(p>=OUTPUT_WIDTH)  break;
                                         output.data[n][q][p][m] += input.data[n][q*LAYER_STRIDE+s][p*LAYER_STRIDE+r][c] * layer.weights[s][r][c][m];
                                         //printf("%zu\t%zu\t%zu\n", 
                                         //&output.data[n][q][p][m]-flattened_output,
@@ -132,7 +132,7 @@ void* conv4d_convolve_threads_discrete_helper(){
 
 void conv4d_convolve_threads_discrete(){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
     //Initialize threads
     pthread_t threads[THREAD_SUPPORT];
@@ -185,7 +185,7 @@ void* conv4d_convolve_threads_tiled_helper(){
 }
 void conv4d_convolve_threads_tiled(int block_size){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
     //Set block size
     thread_block_size = block_size;
 
@@ -204,7 +204,7 @@ void conv4d_convolve_threads_tiled(int block_size){
 #ifdef OMP_SUPPORT
 void conv4d_convolve_OpenMP_discrete(){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
     //Begin convolution
     #pragma omp parallel default(none) shared(output, input, layer)
@@ -235,15 +235,18 @@ void conv4d_convolve_OpenMP_discrete(){
 
 void conv4d_convolve_OpenMP_tiled(int block_size){
     //Reset memory
-    memset(output.data, 0, OUTPUT_SIZE * sizeof(float));
+    memset(&output, 0, sizeof(output));
 
-    int n, q0, p0, s, r, c, m, q1, p1, q, p;
 
     //Begin convolution
-    #pragma omp parallel default(none) shared(output, input, layer) firstprivate(block_size) private(n, q0, p0, s, r, c, m, q1, p1, q, p)
+    #pragma omp parallel default(none) shared(output, layer, input) firstprivate(block_size)
     {
+
+
+        int n, q0, p0, s, r, c, m, q1, p1, q, p;
         
-        #pragma omp for schedule(static) collapse(7) nowait
+        
+        #pragma omp for schedule(static) collapse(9)
         for (n = 0; n < OUTPUT_BATCHES; n++)
             for (q0 = 0; q0 < OUTPUT_HEIGHT; q0+=block_size)
                 for (p0 = 0; p0 < OUTPUT_WIDTH; p0+=block_size)
@@ -252,11 +255,11 @@ void conv4d_convolve_OpenMP_tiled(int block_size){
                             for (m = 0; m < OUTPUT_CHANNELS; m++)
                                 for (c = 0; c < INPUT_CHANNELS; c++)
                                     for(q1 = 0; q1 < block_size; q1++){
-                                        q=q0+q1;
-                                        if(q>OUTPUT_HEIGHT) break;
                                         for(p1 = 0; p1 < block_size; p1++){
                                             p=p0+p1;
-                                            if(p>OUTPUT_WIDTH)  break;
+                                            if(p>=OUTPUT_WIDTH)  continue;
+                                            q=q0+q1;
+                                            if(q>=OUTPUT_HEIGHT) continue;
                                             output.data[n][q][p][m] += input.data[n][q*LAYER_STRIDE+s][p*LAYER_STRIDE+r][c] * layer.weights[s][r][c][m];
                                         }
                                     }

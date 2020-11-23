@@ -9,6 +9,7 @@ check_include_file(unistd.h HAVE_UNISTD_H HAVE_UNISTD_H)
 
 
 set(PROJECT_CUDA
+conv4D_impl_GPU.cu
 )
 
 set(PROJECT_SOURCES
@@ -31,11 +32,12 @@ if(CMAKE_CUDA_COMPILER)
         add_compile_definitions(CUDA_SUPPORT)
     else()
         add_definitions("-DCUDA_SUPPORT")
+        set_property(TARGET c-lib PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
     endif()
     #Add source
-    set(PROJECT_CUDA
+    set(PROJECT_SOURCES
+        ${PROJECT_SOURCES}
         ${PROJECT_CUDA}
-        conv4D_impl_GPU.cu
     )
 else()
     message("${Red}             CUDA not found${ColorReset}")
@@ -60,14 +62,14 @@ else()
 endif()
 
 
-
+enable_language("CUDA")
 
 
 
 # Add source to this project's executable.
-add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_CUDA})
+add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 # Compile the CUDA files separately. They can still be linked.
-set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+#set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 # Link to libraries
 # Threads
 target_link_libraries(${EXECUTABLE_NAME} Threads::Threads)
