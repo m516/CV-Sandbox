@@ -7,22 +7,39 @@ fprintf(stderr, "In function %s\n", __func__);                        \
 fprintf(stderr, __VA_ARGS__);                                         \
 exit(1);                                                              \
 }                                                                     
-//Filenames
+
+#define USE_FILES //Comment to disable reading from files, generating random values instead.
+
+//Filenames (only used if USE_FILES is defined)
+#ifdef USE_FILES
 #define INPUT_FILENAME        "dnn/Test_Input0/layer_0_output.bin"
 #define OUTPUT_FILENAME       "dnn/Test_Input0/layer_1_output.bin"
 #define LAYER_WEIGHT_FILENAME "dnn/Test_Input0/conv2_weights.bin"
 #define LAYER_BIAS_FILENAME   "dnn/Test_Input0/conv2_biases.bin"
 //Input parameters
-#define INPUT_BATCHES 1    //Configure for each layer
-#define INPUT_WIDTH 60     //Configure for each layer
-#define INPUT_HEIGHT 60    //Configure for each layer
-#define INPUT_CHANNELS 32  //Configure for each layer
+#define INPUT_BATCHES   1     //Configure based on the matching specs from the layer of the corresponding file
+#define INPUT_WIDTH     60    //Configure based on the matching specs from the layer of the corresponding file
+#define INPUT_HEIGHT    60    //Configure based on the matching specs from the layer of the corresponding file
+#define INPUT_CHANNELS  32    //Configure based on the matching specs from the layer of the corresponding file
 //Layer parameter
-#define LAYER_WIDTH 5     //Configure for each layer
-#define LAYER_HEIGHT 5    //Configure for each layer
-#define LAYER_STRIDE 1    //Configure for each layer
+#define LAYER_WIDTH     5     //Configure based on the matching specs from the layer of the corresponding file
+#define LAYER_HEIGHT    5     //Configure based on the matching specs from the layer of the corresponding file
+#define LAYER_STRIDE    1     //Configure based on the matching specs from the layer of the corresponding file
 //Output parameter
-#define OUTPUT_CHANNELS 32 //Configure for each layer
+#define OUTPUT_CHANNELS 32    //Configure for each layer based on the matching specs from the layer of the file
+#else //Make a big problem size to benchmark optimizations
+//Input parameters
+#define INPUT_BATCHES   1     //Configure
+#define INPUT_WIDTH     128   //Configure
+#define INPUT_HEIGHT    128   //Configure
+#define INPUT_CHANNELS  32    //Configure
+//Layer parameter
+#define LAYER_WIDTH     32    //Configure
+#define LAYER_HEIGHT    32    //Configure
+#define LAYER_STRIDE    2     //Configure
+//Output parameter
+#define OUTPUT_CHANNELS 40    //Configure
+#endif
 
 //Calculated output dimensions
 #define OUTPUT_BATCHES INPUT_BATCHES
@@ -55,4 +72,4 @@ extern const float* flattened_output;
 extern const float* flattened_output_expected;
 
 void conv4d_data_load();
-long double conv4d_total_error();
+long double conv4d_average_error();

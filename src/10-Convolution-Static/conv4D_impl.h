@@ -14,8 +14,8 @@ void conv4d_convolve_threads_tiled(int block_size);
 
 
 #ifdef CUDA_SUPPORT
-void conv4d_convolve_cuda_discrete(int block_size);
-void conv4d_convolve_cuda_discrete_rewrite_gpu_data(int block_size);
+void conv4d_convolve_cuda_discrete(int block_size, int grid_size);
+void conv4d_convolve_cuda_discrete_rewrite_gpu_data(int block_size, int grid_size);
 void conv4d_convolve_cuda_CUDNN();
 #endif
 

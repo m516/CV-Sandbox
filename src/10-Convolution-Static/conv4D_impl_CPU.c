@@ -9,7 +9,7 @@
 
 void conv4d_convolve_serial_naive(){
     //Reset memory
-    memset(&output, 0, sizeof(output));
+     memset(&output, 0, sizeof(output));
 
     //Begin convolution
     for (size_t n = 0; n < OUTPUT_BATCHES; n++)
@@ -210,28 +210,26 @@ void conv4d_convolve_OpenMP_discrete(){
     #pragma omp parallel default(none) shared(output, input, layer)
     {
         int n, q, p, s, r, c, m;
-        #pragma omp for schedule(static) collapse(7) nowait
+        #pragma omp for schedule(static) collapse(3) nowait
         for (size_t n = 0; n < OUTPUT_BATCHES; n++)
             for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
-                for (size_t p = 0; p < OUTPUT_WIDTH; p++)
+                for (size_t p = 0; p < OUTPUT_WIDTH; p++){
                     for (size_t s = 0; s < LAYER_HEIGHT; s++)
                         for (size_t r = 0; r < LAYER_WIDTH; r++)
                             for (size_t c = 0; c < INPUT_CHANNELS; c++)
                                 for (size_t m = 0; m < OUTPUT_CHANNELS; m++){
                                     output.data[n][q][p][m] += input.data[n][q*LAYER_STRIDE+s][p*LAYER_STRIDE+r][c] * layer.weights[s][r][c][m];
                                 }
-
-        //Bias and activation function (ReLU)
-        #pragma omp for schedule(static) collapse(4) nowait
-        for (size_t n = 0; n < OUTPUT_BATCHES; n++)
-            for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
-                for (size_t p = 0; p < OUTPUT_WIDTH; p++)
+                    //Bias and activation function (ReLU)
                     for (size_t m = 0; m < OUTPUT_CHANNELS; m++){
                         output.data[n][q][p][m] += layer.bias[m];
                         if(output.data[n][q][p][m] < 0) output.data[n][q][p][m] = 0;
                     }
+                }
     }
 }
+
+
 
 void conv4d_convolve_OpenMP_tiled(int block_size){
     //Reset memory
@@ -239,42 +237,29 @@ void conv4d_convolve_OpenMP_tiled(int block_size){
 
 
     //Begin convolution
-    #pragma omp parallel default(none) shared(output, layer, input) firstprivate(block_size)
+    #pragma omp parallel default(none) shared(output, input, layer) firstprivate(block_size)
     {
-
-
-        int n, q0, p0, s, r, c, m, q1, p1, q, p;
-        
-        
-        #pragma omp for schedule(static) collapse(9)
-        for (n = 0; n < OUTPUT_BATCHES; n++)
-            for (q0 = 0; q0 < OUTPUT_HEIGHT; q0+=block_size)
-                for (p0 = 0; p0 < OUTPUT_WIDTH; p0+=block_size)
-                    for (s = 0; s < LAYER_HEIGHT; s++)
-                        for (r = 0; r < LAYER_WIDTH; r++)
-                            for (m = 0; m < OUTPUT_CHANNELS; m++)
-                                for (c = 0; c < INPUT_CHANNELS; c++)
-                                    for(q1 = 0; q1 < block_size; q1++){
-                                        for(p1 = 0; p1 < block_size; p1++){
-                                            p=p0+p1;
-                                            if(p>=OUTPUT_WIDTH)  continue;
-                                            q=q0+q1;
-                                            if(q>=OUTPUT_HEIGHT) continue;
-                                            output.data[n][q][p][m] += input.data[n][q*LAYER_STRIDE+s][p*LAYER_STRIDE+r][c] * layer.weights[s][r][c][m];
-                                        }
-                                    }
-                                        
-                                            
-
-        //Bias and activation function (ReLU)
-        #pragma omp for schedule(static) collapse(4) nowait
-        for (n = 0; n < OUTPUT_BATCHES; n++)
-            for (q = 0; q < OUTPUT_HEIGHT; q++)
-                for (p = 0; p < OUTPUT_WIDTH; p++)
-                    for (m = 0; m < OUTPUT_CHANNELS; m++){
+        int n, q, p, s, r, c, m;
+        int c0, c_max;
+        #pragma omp for schedule(static) collapse(3) nowait
+        for (size_t n = 0; n < OUTPUT_BATCHES; n++)
+            for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
+                for (size_t p = 0; p < OUTPUT_WIDTH; p++){
+                    for (size_t s = 0; s < LAYER_HEIGHT; s++)
+                        for (size_t r = 0; r < LAYER_WIDTH; r++)
+                            for (size_t c0 = 0; c0 < INPUT_CHANNELS; c0 += block_size){
+                                c_max = c0 + block_size;
+                                if(c_max > INPUT_CHANNELS) c_max = INPUT_CHANNELS;
+                                for (size_t m = 0; m < OUTPUT_CHANNELS; m++)
+                                    for(c = c0; c < c_max; c++)
+                                        output.data[n][q][p][m] += input.data[n][q*LAYER_STRIDE+s][p*LAYER_STRIDE+r][c] * layer.weights[s][r][c][m];
+                            }
+                    //Bias and activation function (ReLU)
+                    for (size_t m = 0; m < OUTPUT_CHANNELS; m++){
                         output.data[n][q][p][m] += layer.bias[m];
                         if(output.data[n][q][p][m] < 0) output.data[n][q][p][m] = 0;
                     }
+                }
     }
 }
 #endif

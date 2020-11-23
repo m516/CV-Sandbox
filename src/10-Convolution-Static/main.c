@@ -6,15 +6,6 @@
 #include "conv4D_data_structures.h"
 #include "conv4D_impl.h"
 
-#if HAVE_UNISTD_H
-#   include <unistd.h>
-#elif _WIN32
-#	include <direct.h>
-#   define chdir _chdir
-#else
-#	warning "Couldn't find unistd.h via CMake and not a Windows platoform. Attempting to use unistd.h anyway"
-#   include <unistd.h>
-#endif
 
 
 #ifdef OMP_SUPPORT
@@ -24,7 +15,7 @@
 #include <pthread.h>
 #endif
 
-#define TRIALS 10
+#define TRIALS 2
 
 #define BENCHMARK_ALGORITHM(algo_name, ...) {                                                         \
 	double benchmark_algorithm_time_elapsed = 0;                                                     \
@@ -32,7 +23,7 @@
 	unsigned long benchmark_algorithm_time_start;                                                    \
 	unsigned long benchmark_algorithm_time_diff;                                                     \
 	algo_name ( __VA_ARGS__ );                                                                        \
-	benchmark_algorithm_max_error = (double)conv4d_total_error();                                    \
+	benchmark_algorithm_max_error = (double)conv4d_average_error();                                    \
 	for (int benchmark_algorithm_i = 0;                                                              \
 			benchmark_algorithm_i < TRIALS;                                                          \
 			benchmark_algorithm_i++) {                                                               \
@@ -65,14 +56,9 @@ void print_barrier() {
 
 
 int main() {
-	chdir(MEDIA_DIRECTORY);
 
 	conv4d_data_load();
-
-	int i;
-
 	
-	/*
 	BENCHMARK_ALGORITHM(conv4d_convolve_serial_naive);
 	BENCHMARK_ALGORITHM(conv4d_convolve_serial_discrete);
 	BENCHMARK_ALGORITHM(conv4d_convolve_serial_tiled, 1);
@@ -114,71 +100,34 @@ int main() {
 	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_tiled, 9);
 	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_tiled, 10);
 	#endif
-	*/
-
-
 
 	#ifdef CUDA_SUPPORT
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 5);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 6);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 7);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 8);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 9);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 10);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 11);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 12);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 13);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 14);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 15);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 16);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 17);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 18);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 19);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 20);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 21);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 22);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 23);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 24);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 25);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 26);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 27);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 28);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 29);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 30);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 31);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 32);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 5);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 6);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 7);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 9);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 10);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 11);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 12);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 13);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 14);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 15);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 16);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 17);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 18);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 19);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 20);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 21);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 22);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 23);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 24);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 25);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 26);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 27);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 28);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 29);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 30);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 31);
-	// BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 4, 4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  32);
 	#endif
-
 }
 
 
