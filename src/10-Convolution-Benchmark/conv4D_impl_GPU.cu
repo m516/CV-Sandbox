@@ -93,7 +93,7 @@ void host_var_update(){
  * 
  * @param block_size 
  */
-void conv4d_convolve_cuda_discrete(int block_size, int grid_size){
+void conv4d_convolve_CUDA_discrete(int block_size, int grid_size){
 
     if(block_size<=0) CONV4D_DATA_STRUCTURE_RUNTIME_ERROR("GPU block size expected to be larger than 0. Got %d\n", block_size);
     if(grid_size<=0) CONV4D_DATA_STRUCTURE_RUNTIME_ERROR("GPU grid size expected to be larger than 0. Got %d\n", grid_size);
@@ -159,10 +159,10 @@ void conv4d_convolve_cuda_discrete(int block_size, int grid_size){
     // }
 }
 
-void conv4d_convolve_cuda_discrete_rewrite_gpu_data(int block_size, int grid_size){
+void conv4d_convolve_CUDA_discrete_rewrite_gpu_data(int block_size, int grid_size){
     cudaCheckError();
     cuda_var_update();
     cudaCheckError();
-    conv4d_convolve_cuda_discrete(block_size, grid_size);
+    conv4d_convolve_CUDA_discrete(block_size, grid_size);
     cudaCheckError();
 }

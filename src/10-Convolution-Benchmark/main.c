@@ -15,27 +15,27 @@
 #include <pthread.h>
 #endif
 
-#define TRIALS 2
+#define TRIALS 32
 
-#define BENCHMARK_ALGORITHM(algo_name, ...) {                                                         \
+#define BENCHMARK_ALGORITHM(algo_name, ...) {                                                        \
 	double benchmark_algorithm_time_elapsed = 0;                                                     \
 	double benchmark_algorithm_max_error = 0;                                                        \
 	unsigned long benchmark_algorithm_time_start;                                                    \
 	unsigned long benchmark_algorithm_time_diff;                                                     \
-	algo_name ( __VA_ARGS__ );                                                                        \
-	benchmark_algorithm_max_error = (double)conv4d_average_error();                                    \
+	algo_name ( __VA_ARGS__ );                                                                       \
+	benchmark_algorithm_max_error = (double)conv4d_average_error();                                  \
 	for (int benchmark_algorithm_i = 0;                                                              \
 			benchmark_algorithm_i < TRIALS;                                                          \
 			benchmark_algorithm_i++) {                                                               \
     	benchmark_algorithm_time_start = get_gtod_clock_time ();                                     \
-		algo_name ( __VA_ARGS__ );                                                                    \
-		benchmark_algorithm_time_diff = get_gtod_clock_time () - benchmark_algorithm_time_start;    \
-		benchmark_algorithm_time_elapsed += (double) benchmark_algorithm_time_diff;                 \
-	}                                                                                                 \
+		algo_name ( __VA_ARGS__ );                                                                   \
+		benchmark_algorithm_time_diff = get_gtod_clock_time () - benchmark_algorithm_time_start;     \
+		benchmark_algorithm_time_elapsed += (double) benchmark_algorithm_time_diff;                  \
+	}                                                                                                \
 	benchmark_algorithm_time_elapsed /= 1000000 * TRIALS;                                            \
-	printf(#algo_name ",\t%lf,\t%lf,\t" #__VA_ARGS__ "\n",                                            \
-		benchmark_algorithm_time_elapsed, benchmark_algorithm_max_error);                           \
-}                                                                                                     \
+	printf(#algo_name ",\t%lf,\t%lf,\t" #__VA_ARGS__ "\n",                                           \
+		benchmark_algorithm_time_elapsed, benchmark_algorithm_max_error);                            \
+}                                                                                                    \
 
 
 unsigned long get_gtod_clock_time ()
@@ -56,6 +56,8 @@ void print_barrier() {
 
 
 int main() {
+
+	printf("Floating point operations: %d\n", (OUTPUT_BATCHES)*(OUTPUT_HEIGHT)*((OUTPUT_WIDTH)*LAYER_HEIGHT*LAYER_WIDTH*INPUT_CHANNELS+1)*OUTPUT_CHANNELS);
 
 	conv4d_data_load();
 	
@@ -101,32 +103,32 @@ int main() {
 	BENCHMARK_ALGORITHM(conv4d_convolve_OpenMP_tiled, 10);
 	#endif
 
-	#ifdef CUDA_SUPPORT
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete_rewrite_gpu_data, 4, 4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,   1);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,   1);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,   1);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,   1);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  2);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  2);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  2);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  2);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  4);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  8);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  8);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  8);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  8);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  16);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  16);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  16);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  16);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 1,  32);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 2,  32);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 4,  32);
-	BENCHMARK_ALGORITHM(conv4d_convolve_cuda_discrete, 8,  32);
+	 #ifdef CUDA_SUPPORT
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete_rewrite_gpu_data, 4, 4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,   1);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,  2);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,  4);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,  8);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,  16);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 1,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 2,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 4,  32);
+	BENCHMARK_ALGORITHM(conv4d_convolve_CUDA_discrete, 8,  32);
 	#endif
 }
 

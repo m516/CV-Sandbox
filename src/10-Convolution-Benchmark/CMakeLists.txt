@@ -27,6 +27,7 @@ conv4D_data_structures.h
 #CUDA
 if(CMAKE_CUDA_COMPILER)
     message("${Green}             CUDA found${ColorReset}")
+    enable_language("CUDA")
     #Add compiler definition
     if(CMAKE_VERSION VERSION_GREATER 3.12)
         add_compile_definitions(CUDA_SUPPORT)
@@ -62,7 +63,7 @@ else()
 endif()
 
 
-enable_language("CUDA")
+
 
 
 

@@ -210,7 +210,7 @@ void conv4d_convolve_OpenMP_discrete(){
     #pragma omp parallel default(none) shared(output, input, layer)
     {
         int n, q, p, s, r, c, m;
-        #pragma omp for schedule(static) collapse(3) nowait
+        #pragma omp for schedule(guided) collapse(3) nowait
         for (size_t n = 0; n < OUTPUT_BATCHES; n++)
             for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
                 for (size_t p = 0; p < OUTPUT_WIDTH; p++){
@@ -241,7 +241,7 @@ void conv4d_convolve_OpenMP_tiled(int block_size){
     {
         int n, q, p, s, r, c, m;
         int c0, c_max;
-        #pragma omp for schedule(static) collapse(3) nowait
+        #pragma omp for schedule(guided) collapse(3) nowait
         for (size_t n = 0; n < OUTPUT_BATCHES; n++)
             for (size_t q = 0; q < OUTPUT_HEIGHT; q++)
                 for (size_t p = 0; p < OUTPUT_WIDTH; p++){
