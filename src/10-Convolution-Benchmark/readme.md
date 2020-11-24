@@ -30,7 +30,7 @@
     - [Hardware Used for Benchmarking](#hardware-used-for-benchmarking)
     - [Software Used for Benchmarking](#software-used-for-benchmarking)
 - [Results](#results)
-  - [TinyImageNet Neural Network](#tinyimagenet-neural-network)
+  - [TinyImageNet Neural Network Layer](#tinyimagenet-neural-network-layer)
     - [Tiled Performance](#tiled-performance)
     - [OpenMP Performance](#openmp-performance)
     - [CUDA Performance](#cuda-performance)
@@ -279,12 +279,12 @@ The benchmark attempts to use as many resources as possible. OpenMP and Pthread 
 Results
 =======
 
-TinyImageNet Neural Network
+TinyImageNet Neural Network Layer
 ---------------------------
 
-The first benchmark is based on intermediate feature maps that were extracted from a TinyImageNet neural network running on Tensorflow. The extracted feature map and convolutional layer data were placed in binary files under the media/dnn directory in the project folder. To ensure that all algorithms work as expected, the output feature map was also extracted into a file, and the values in the calculated feature map are compared with the corresponding values in the file.
+The first benchmark is based on an intermediate feature map that was extracted from a TinyImageNet neural network running on Tensorflow. The extracted feature map and convolutional layer data were placed in binary files under the media/dnn directory in the project folder. To ensure that all algorithms work as expected, the output feature map was also extracted into a file, and the values in the calculated feature map are compared with the corresponding values in the file.
 
-These are the dimensions of the feature map:
+These are the dimensions of the input feature map:
 
 *   **Input feature map filename:** "dnn/Test_Input0/layer_0_output.bin"
 *   **Layer weights filename:** "dnn/Test_Input0/conv2_weights.bin"
