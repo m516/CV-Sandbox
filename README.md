@@ -38,3 +38,4 @@ Here are all my projects so far:
 |                               [Hello CUDA](src/07-Hello-CUDA) | A basic program written in CUDA C++                                                                                                                  |
 |                     [CUDA and OpenGL](src/08-CUDA-and-OpenGL) | A basic program written in CUDA to modify an OpenGL texture using a per-pixel function                                                               |
 |         [OpenCV Video Template](src/09-OpenCV-Video-Template) | A template program for video analysis with OpenCV                                                                                                    |
+|         [Convolution Benchmark](src/10-Convolution-Benchmark) | A whole suite of eight janky matrix convolution implementations in C. Plus benchmark software to assess my incompetence!                             |
