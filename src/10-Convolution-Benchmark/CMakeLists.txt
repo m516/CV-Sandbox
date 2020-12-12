@@ -33,7 +33,7 @@ if(CMAKE_CUDA_COMPILER)
         add_compile_definitions(CUDA_SUPPORT)
     else()
         add_definitions("-DCUDA_SUPPORT")
-        set_property(TARGET c-lib PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+        #set_property(TARGET c-lib PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
     endif()
     #Add source
     set(PROJECT_SOURCES
