@@ -1,11 +1,22 @@
-#include "conv4D_data_structures.h"
-#include "conv4D_impl.h"
-#include <pthread.h>
+
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "conv4D_data_structures.h"
+#include "conv4D_impl.h"
+
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#include <unistd.h>
+#include <sys/time.h>
+#endif
+#ifdef OMP_SUPPORT
+#include <omp.h>
+#endif
+#ifdef THREAD_SUPPORT
+#include <pthread.h>
+#endif
 
 void conv4d_convolve_serial_naive(){
     //Reset memory

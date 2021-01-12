@@ -1,4 +1,5 @@
 #include "conv4D_data_structures.h"
+#include "device_launch_parameters.h"
 extern "C" {
     #include "conv4D_impl.h"
     #include <math.h>

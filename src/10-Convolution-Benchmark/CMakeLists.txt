@@ -3,6 +3,8 @@
 # This is the name of the executable
 set(EXECUTABLE_NAME 10_CONVOLUTION_BENCHMARK)
 
+#Only works on Linux (for timing)
+ENFORCE_UNIX()
 
 include(CheckIncludeFiles)
 check_include_file(unistd.h HAVE_UNISTD_H HAVE_UNISTD_H)

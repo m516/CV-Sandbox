@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
+
 #include "conv4D_data_structures.h"
 #include "conv4D_impl.h"
 
-
-
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#include <unistd.h>
+#include <sys/time.h>
+#endif
 #ifdef OMP_SUPPORT
 #include <omp.h>
 #endif
