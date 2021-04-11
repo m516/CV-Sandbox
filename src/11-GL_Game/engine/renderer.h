@@ -19,6 +19,7 @@ class Renderer{
      */
     void render();
     void close();
+    GLFWwindow* window() const {return _window;}
 
     private:
     GLFWwindow* _window = NULL;

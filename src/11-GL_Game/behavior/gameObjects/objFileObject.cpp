@@ -129,8 +129,8 @@ ObjFileObject::ObjFileObject(const char* filename) : GameObject(){
 void ObjFileObject::update(){
     for(int i = 0; i < 36; i++){
         for(int j = 0; j < 3; j++){
-            _vertexArray[i]->position[j]=_vertexPositions[i*3+j]*0.5f+_pos[j];
-            _vertexArray[i]->color[j]   =_vertexColors[i*3+j];
+            _vertexArray[i]->position[j]=_vertexPositions[i*3+j]+_pos[j];
+            _vertexArray[i]->color[j]   =_vertexColors[i*3+j]*_col[j];
         }
         for(int j = 0; j < 2; j++){
             _vertexArray[i]->uv[j]      =_vertexUVs[i*2+j];

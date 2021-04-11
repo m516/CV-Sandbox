@@ -33,6 +33,7 @@ set(PROJECT_HEADERS
 "behavior/worlds/w1_triangle.h"
 "behavior/worlds/w2_cube.h"
 "behavior/worlds/w3_objects.h"
+"behavior/worlds/w4_wysiwyg.h"
 "engine/renderer.h"
 "engine/shader.h"
 "engine/stb_image.h"

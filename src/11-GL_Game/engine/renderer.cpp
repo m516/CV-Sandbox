@@ -46,6 +46,9 @@ void Renderer::init(World *world){
 	//Shaders
 	_shader = world->_shader;
 	_shader->_init();
+
+	//Pair with the world, so the world can access the window.
+	world->_renderer = this;
 }
 
 void Renderer::render(){
@@ -99,7 +102,7 @@ void Renderer::render(){
 
     	glfwPollEvents();
     	glfwSwapBuffers(_window);
-		//this_thread::sleep_for(milliseconds(1000));
+		//this_thread::sleep_for(milliseconds(16));
 	}
 }
 

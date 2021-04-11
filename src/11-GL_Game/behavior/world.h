@@ -37,6 +37,10 @@ class World{
     }
     protected:
     friend class Renderer;
+    /**
+     * @brief The instance of the current renderer. Can be used to access the window for event polling.
+     */
+    Renderer* _renderer = NULL;
     std::vector<GameObject*> _objects;
     VertexArray* _vertexArray = NULL;
     /**
