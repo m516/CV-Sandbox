@@ -60,9 +60,10 @@ class GLValue{
 
 class Vertex{
     public:
-    GLValue color[3], position[3];
+    GLValue color[3], position[3], uv[2];
     GLValue &x = position[0], &y = position[1], &z = position[2];
     GLValue &r = color[0], &g = color[1], &b = color[2];
+    GLValue &u = uv[0], &v = uv[1];
 };
 
 class VertexArray{
@@ -89,14 +90,17 @@ class VertexArray{
         //Metadata
         v._vertexColorBuffer        = _vertexColorBuffer;
         v._vertexPositionBuffer     = _vertexPositionBuffer;
+        v._vertexUVBuffer           = _vertexUVBuffer;
         v._vertexColorBufferData    = _vertexColorBufferData    + 3*start;
         v._vertexPositionBufferData = _vertexPositionBufferData + 3*start;
+        v._vertexUVBufferData       = _vertexUVBufferData       + 2*start;
         return v;
     }
     ~VertexArray(){
         if(_allocatedData){
             delete _vertexColorBufferData;
             delete _vertexPositionBufferData;
+            delete _vertexUVBufferData;
         }
     }
     bool resizable(){ return !_boundToGL(); }
@@ -108,8 +112,8 @@ class VertexArray{
     friend class Renderer;
     bool _allocatedData = false;
     vector<Vertex*> _vertices;
-    GLuint _vertexColorBuffer, _vertexPositionBuffer, _vertexArray;
-    GLfloat *_vertexColorBufferData = nullptr, *_vertexPositionBufferData = nullptr;
+    GLuint _vertexColorBuffer, _vertexPositionBuffer, _vertexUVBuffer, _vertexArray;
+    GLfloat *_vertexColorBufferData = nullptr, *_vertexPositionBufferData = nullptr, *_vertexUVBufferData = nullptr;
     bool _boundToGL(){ return _vertexPositionBufferData != nullptr; }
     void _allocateBuffers(){
         //Check for potential memory leaks caused by allocating buffer more than once
@@ -120,18 +124,22 @@ class VertexArray{
         //Allocate memory for vertex positions and colors
         glGenBuffers(1, &_vertexPositionBuffer);
         glGenBuffers(1, &_vertexColorBuffer);
+        glGenBuffers(1, &_vertexUVBuffer);
         //Create GLfloat arrays
         _vertexColorBufferData = new GLfloat[size()*3];
         _vertexPositionBufferData = new GLfloat[size()*3];
+        _vertexUVBufferData = new GLfloat[size()*2];
         //Set allocated flag to ensure data gets destroyed when the vertex array is destroyed
         _allocatedData = true;
         //Bind all vertices
-        GLfloat *caddr = _vertexColorBufferData, *paddr = _vertexPositionBufferData;
+        GLfloat *caddr = _vertexColorBufferData, *paddr = _vertexPositionBufferData, *uaddr = _vertexUVBufferData;
         for(int i = 0; i < size(); i++){
             _vertices[i]->color[0]._v    = caddr++;
             _vertices[i]->position[0]._v = paddr++;
+            _vertices[i]->uv[0]._v       = uaddr++;
             _vertices[i]->color[1]._v    = caddr++;
             _vertices[i]->position[1]._v = paddr++;
+            _vertices[i]->uv[1]._v       = uaddr++;
             _vertices[i]->color[2]._v    = caddr++;
             _vertices[i]->position[2]._v = paddr++;
         }
@@ -147,6 +155,8 @@ class VertexArray{
             _vertices[i]->position[0]._sync();
             _vertices[i]->position[1]._sync();
             _vertices[i]->position[2]._sync();
+            _vertices[i]->uv[0]._sync();
+            _vertices[i]->uv[1]._sync();
         }
     }
 };

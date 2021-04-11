@@ -84,8 +84,8 @@ void TestCube::update(){
 
     for(int i = 0; i < numVertices(); i++){
         for(int j = 0; j < 3; j++){
-            _vertexArray[i]->position[j]=g_vertex_buffer_data[i*3+j]*0.5+_pos[j];
-            _vertexArray[i]->color[j]   =g_color_buffer_data[i*3+j]*0.5;
+            _vertexArray[i]->position[j]=g_vertex_buffer_data[i*3+j]*0.5f+_pos[j];
+            _vertexArray[i]->color[j]   =g_color_buffer_data[i*3+j]*0.5f;
         }
     }
 }

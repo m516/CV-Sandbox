@@ -1,6 +1,8 @@
 #version 330 core
 in vec4 vPos;
 in vec4 vColor;
+in vec2 vTexCoord;
+
 out vec4 fColor;
 
 void main(void) {

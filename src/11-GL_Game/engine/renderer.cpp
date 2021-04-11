@@ -41,7 +41,7 @@ void Renderer::init(World *world){
     }
 
 	//Set the clear color
-	glClearColor(0.1f, 0.1f, 0.14f, 0.1f);
+	glClearColor(.1f, .1f, .1f, .1f);
 
 	//Shaders
 	_shader = world->_shader;
@@ -71,6 +71,9 @@ void Renderer::render(){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArray._vertexColorBuffer);
 		glBufferData(GL_ARRAY_BUFFER, vertexArray.size()*3*sizeof(GLfloat), vertexArray._vertexColorBufferData, GL_STATIC_DRAW);
 
+		glBindBuffer(GL_ARRAY_BUFFER, vertexArray._vertexUVBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertexArray.size()*2*sizeof(GLfloat), vertexArray._vertexUVBufferData, GL_STATIC_DRAW);
+
 		// 1st attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArray._vertexPositionBuffer);
@@ -81,20 +84,27 @@ void Renderer::render(){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArray._vertexColorBuffer);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+		// 3rd attribute        : UVs
+		glEnableVertexAttribArray(2);  
+		glBindBuffer(GL_ARRAY_BUFFER, vertexArray._vertexUVBuffer);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
 		// Draw the triangle!
 		glDrawArrays(GL_TRIANGLES, 0, vertexArray.size()); // 3 index starting at 0
+		
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
 
     	glfwPollEvents();
     	glfwSwapBuffers(_window);
-		//this_thread::sleep_for(milliseconds(16));
+		//this_thread::sleep_for(milliseconds(1000));
 	}
 }
 
 void Renderer::close(){
 	//Close GLFW
-	glfwTerminate();
 	std::cout << "Closing the application normally." << std::endl;
+	terminate(0);
 }

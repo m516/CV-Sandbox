@@ -17,10 +17,11 @@ class GameObject{
      * @return size_t 
      */
     virtual size_t numVertices() const = 0;
+    virtual ~GameObject(){}
+    float _pos[3] = {0, 0, 0};
+    float &_x = _pos[0], &_y = _pos[1], &_z = _pos[2];
     protected:
     friend class World;
     VertexArray _vertexArray;
     World* _world;
-    float _pos[3];
-    float &_x = _pos[0], &_y = _pos[1], &_z = _pos[2];
 };

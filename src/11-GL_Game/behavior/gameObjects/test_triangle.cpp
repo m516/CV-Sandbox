@@ -14,6 +14,13 @@ const float color_data[] = {
     0.0f, 0.0f, 1.0f,
 };
 
+// One color (RGB for this) for each vertex.
+const float uv_data[] = { 
+    0.0f, 0.0f,
+    0.5f, 1.0f,
+    1.0f, 0.0f,
+};
+
 void TestTriangle::update(){
     _y = cos(_world->gameTime());
     _x = sin(_world->gameTime());
@@ -23,5 +30,10 @@ void TestTriangle::update(){
             _vertexArray[i]->position[j]=vertex_data[i*3+j]+_pos[j];
             _vertexArray[i]->color[j]   =color_data[i*3+j];
         }
+        for(int j = 0; j < 2; j++){
+            _vertexArray[i]->uv[j]=vertex_data[i*2+j];
+        }
     }
+
+
 }
