@@ -123,6 +123,11 @@ message("${BoldYellow}Using local copy of ImGui${ColorReset}")
 add_subdirectory(extern/imgui)
 include_directories(extern)
 
+# glm
+message("${BoldYellow}Using local copy of GLM${ColorReset}")
+add_subdirectory(extern/glm)
+include_directories(extern/glm)
+
 message("${BoldYellow}Library search complete!${ColorReset}")
 
 message("${BoldYellow}Checking OpenMP support${ColorReset}")
