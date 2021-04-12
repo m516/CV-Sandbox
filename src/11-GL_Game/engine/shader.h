@@ -20,6 +20,9 @@
 #include "stb_image.h"
 #include "../utils.h"
 
+
+class Renderer;
+
 namespace Shaders{
 
     GLuint Load(const char * vertex_file_path,const char * fragment_file_path);
@@ -29,6 +32,7 @@ namespace Shaders{
         virtual ~AbstractShader(){}
         protected:
         friend class Renderer;
+        Renderer *_renderer;
         GLuint _programID;
         std::string _vertexShaderFilename;
         std::string _fragmentShaderFilename;
@@ -95,13 +99,20 @@ namespace Shaders{
     class TexturedMVP : public AbstractShader{
         public:
         float cameraPosition[3] = {-2, 2, -2};
-        float cameraDirection[3] = {1, -1, 1};
-        ~TexturedMVP(){
-        }
+        float cameraDirection[3] = {-1, -1, -1};
+        float zoom = 5;
+        /**
+         * @brief Returns the most recent view matrix
+         * @return glm::mat4 
+         */
+        glm::mat4 M() {return _M;}
+        ~TexturedMVP(){ }
         private:
         GLuint _viewMatrixID;
         int _textureWidth, _textureHeight, _textureChannels;
         GLuint _textureID;
+        glm::mat4 _M;
+        
 
         virtual void _init(){
             //Create a new OpenGL texture
@@ -112,7 +123,6 @@ namespace Shaders{
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            
             //Load the texture
             unsigned char* textureData;
             const char* texturePath = MEDIA_DIRECTORY "texturedBlocks.png";
@@ -142,10 +152,13 @@ namespace Shaders{
                               cameraPosition[2]+cameraDirection[2]);
             glm::vec3 _up(0, 1, 0);
             glm::mat4 viewMatrix = glm::lookAt(_eye, _center, _up);
-            glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-            glm::mat4 M = projectionMatrix * viewMatrix;
+            //Calculate the projection matrix.
+            //Assumes a square (1:1) aspect ratio
+            glm::mat4 projectionMatrix = glm::ortho(-zoom, zoom, -zoom, zoom, -100.f, 100.f); 
+            // glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+            _M = projectionMatrix * viewMatrix;
             //Apply the matrix
-            glUniformMatrix4fv(_viewMatrixID, 1, GL_FALSE, &M[0][0]);
+            glUniformMatrix4fv(_viewMatrixID, 1, GL_FALSE, &_M[0][0]);
         }
     };
 }

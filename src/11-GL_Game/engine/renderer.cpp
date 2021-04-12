@@ -22,7 +22,7 @@ void Renderer::init(World *world){
 	glfwSetErrorCallback(error_callback);
 
 	//GLFW creates a window and its OpenGL context with the next function
-	_window = glfwCreateWindow(640, 480, "Simple Graphics Processor Game Engine", NULL, NULL);
+	_window = glfwCreateWindow(640, 640, "Simple Graphics Processor Game Engine", NULL, NULL);
 
 	//Check for errors (which would happen if creating a window fails
 	if (!_window)
@@ -47,8 +47,9 @@ void Renderer::init(World *world){
 	_shader = world->_shader;
 	_shader->_init();
 
-	//Pair with the world, so the world can access the window.
+	//Pair with the world and renderer, so both can access the window.
 	world->_renderer = this;
+	world->_shader->_renderer = this;
 }
 
 void Renderer::render(){
