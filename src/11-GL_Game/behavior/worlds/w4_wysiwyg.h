@@ -10,8 +10,64 @@
 #define CAMERA_TRANSLATION_SPEED 1.5
 #define CAMERA_ROTATION_SPEED 2
 
-#define NUM_BLOCKS 14
+
 enum BlockType{GENERIC = 0, ROTATE_LEFT = 1, ROTATE_RIGHT = 2, GOAL = 3, ANTIGRAVITY = 4};
+
+#define HARD_LEVEL 1
+
+#ifdef HARD_LEVEL
+
+#define NUM_BLOCKS 43
+int blocks[NUM_BLOCKS][4] = {
+//  x   y   z, type
+ {-5, -4, 5 , 1}, 
+ {-4, -4, 5 , 0}, 
+ {-5, -4, 4 , 0}, 
+ {-3, -2, 5 , 2}, 
+ {-5, -2, 3 , 2}, 
+ {-2, -2, 5 , 0}, 
+ {-5, -2, 2 , 0}, 
+ {0 , -4, 2 , 0}, 
+ {-2, -4, 0 , 0}, 
+ {0 , -1, 4 , 0}, 
+ {-4, -1, 0 , 0}, 
+ {0 , -4, 1 , 0}, 
+ {-1, -4, 0 , 0}, 
+ {0 , -1, 3 , 0}, 
+ {-3, -1, 0 , 0}, 
+ {0 , -4, 0 , 1}, 
+ {0 , -1, 2 , 1}, 
+ {-2, -1, 0 , 1}, 
+ {3 , -2, 3 , 2}, 
+ {0 , -1, 1 , 0}, 
+ {-1, -1, 0 , 0}, 
+ {-3, -2, -3, 2}, 
+ {2 , -0, 3 , 0}, 
+ {3 , -2, 2 , 0}, 
+ {0 , -1, 0 , 0}, 
+ {-3, -0, -2, 0}, 
+ {-2, -2, -3, 0}, 
+ {3 , -6, -2, 3}, 
+ {2 , -6, -3, 3}, 
+ {3 , -0, 3 , 2}, 
+ {1 , -1, 0 , 0}, 
+ {0 , -1, -1, 0}, 
+ {-3, -0, -3, 2}, 
+ {2 , -1, 0 , 1}, 
+ {0 , -1, -2, 1}, 
+ {3 , -1, 0 , 0}, 
+ {0 , -1, -3, 0}, 
+ {4 , -1, 0 , 0}, 
+ {0 , -1, -4, 0}, 
+ {5 , -0, -2, 0}, 
+ {2 , -0, -5, 0}, 
+ {5 , -0, -3, 2}, 
+ {3 , -0, -5, 2}, 
+};
+
+#else
+
+#define NUM_BLOCKS 14
 int blocks[NUM_BLOCKS][4] = {
 //  x   y   z, type
    {0 , -1,  0, 0 },
@@ -29,6 +85,8 @@ int blocks[NUM_BLOCKS][4] = {
    {-3, -2, -3, 0 },
    {-4, -2, -3, 0 }
 };
+
+#endif
 
 /**
  * @brief The first level of the WYSIWYG game
@@ -183,9 +241,11 @@ class World4_WYSIWYG : public World{
                         case BlockType::ROTATE_LEFT:
                             direction++;
                             if(direction>3) direction=0;
+                            break;
                         case BlockType::ROTATE_RIGHT:
                             direction--;
                             if(direction<0) direction=3;
+                            break;
                     }
                 }
                 else{ //No block to snap to; move back
