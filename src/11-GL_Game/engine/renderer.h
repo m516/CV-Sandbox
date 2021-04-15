@@ -4,7 +4,7 @@
 #include "../utils.h"
 
 class World;
-class Shader;
+class Shaders::AbstractShader;
 
 class Renderer{
     public:

@@ -45,7 +45,7 @@ void Renderer::init(World *world){
 
 	//Shaders
 	_shader = world->_shader;
-	_shader->_init();
+	_shader->init();
 
 	//Pair with the world and renderer, so both can access the window.
 	world->_renderer = this;
@@ -62,8 +62,7 @@ void Renderer::render(){
 		close();
 	}
 	else{
-		//TODO Shader
-		_shader->_apply();
+		_shader->apply();
 
 		//Allocate the OpenGL memory buffers
 		if(!vertexArray._boundToGL()) vertexArray._allocateBuffers();
@@ -95,6 +94,7 @@ void Renderer::render(){
 
 		// Draw the triangle!
 		glDrawArrays(GL_TRIANGLES, 0, vertexArray.size()); // 3 index starting at 0
+		
 		
 
 		glDisableVertexAttribArray(0);

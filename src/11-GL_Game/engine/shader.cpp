@@ -105,11 +105,11 @@ void Shaders::AbstractShader::_loadShaders(){
 	_programID = Load(vPath.c_str(), fPath.c_str());
 }
 
-void Shaders::AbstractShader::_init(){
+void Shaders::AbstractShader::init(){
 	//Do nothing...yet
 }
 
-void Shaders::AbstractShader::_apply(){
+void Shaders::AbstractShader::apply(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_programID);
 }

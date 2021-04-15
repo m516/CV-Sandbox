@@ -7,8 +7,8 @@
 #include "../gameObjects/objFileObject.h"
 
 #define PLAYER_TRANSLATION_SPEED 50
-#define CAMERA_TRANSLATION_SPEED 1.5
-#define CAMERA_ROTATION_SPEED 2
+#define CAMERA_TRANSLATION_SPEED 4
+#define CAMERA_ROTATION_SPEED 4
 
 
 enum BlockType{GENERIC = 0, ROTATE_LEFT = 1, ROTATE_RIGHT = 2, GOAL = 3, ANTIGRAVITY = 4};
@@ -99,8 +99,8 @@ class World4_WYSIWYG : public World{
         _mvpShader = new Shaders::TexturedMVP();
         _shader = _mvpShader;
         //Populate the world with blocks
-        ObjFileObject* genericBlockTemplate = new ObjFileObject("block.obj");
-        ObjFileObject* specialBlockTemplate = new ObjFileObject("block2.obj");
+        ObjFileObject* genericBlockTemplate = new ObjFileObject("block3.obj");
+        ObjFileObject* specialBlockTemplate = new ObjFileObject("block4.obj");
         for(int i = 0; i < NUM_BLOCKS; i++){
             if(blocks[i][3]==BlockType::GENERIC){
                 genericBlockTemplate->_x = (float)blocks[i][0];
@@ -200,6 +200,8 @@ class World4_WYSIWYG : public World{
         return -1;
     }
 
+    
+
     virtual void update(){
         //The direction of the camera. One of four states.
         //Each state rotates the world 90 degrees.
@@ -265,7 +267,10 @@ class World4_WYSIWYG : public World{
             //Update registered keyboard locks
             for(int i = 0; i < 4; i++) keyInput[i] = currKeyInput[i];
             //Update the camera position
-            delta = _deltaTime*CAMERA_TRANSLATION_SPEED;
+            delta = _deltaTime*(CAMERA_TRANSLATION_SPEED + 
+            (pow(_mvpShader->cameraDirection[0]-cameraAngles[direction][0],2)+
+            pow(_mvpShader->cameraDirection[1]-cameraAngles[direction][1],2)+
+            pow(_mvpShader->cameraDirection[2]-cameraAngles[direction][2],2))*10);
             _mvpShader->cameraPosition[0] = (_mvpShader->cameraPosition[0]+(_player->_x-5*_mvpShader->cameraDirection[0])*delta)/(1+delta);
             _mvpShader->cameraPosition[1] = (_mvpShader->cameraPosition[1]+(_player->_y-5*_mvpShader->cameraDirection[1])*delta)/(1+delta);
             _mvpShader->cameraPosition[2] = (_mvpShader->cameraPosition[2]+(_player->_z-5*_mvpShader->cameraDirection[2])*delta)/(1+delta);

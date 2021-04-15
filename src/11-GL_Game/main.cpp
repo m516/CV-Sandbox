@@ -1,6 +1,8 @@
 ﻿#include "main.h"
 #include "engine/renderer.h"
 #include "behavior/worlds/w1_triangle.h"
+#include "behavior/worlds/w2_cube.h"
+#include "behavior/worlds/w3_objects.h"
 #include "behavior/worlds/w4_wysiwyg.h"
 
 #define STB_IMAGE_IMPLEMENTATION

@@ -30,27 +30,27 @@ namespace Shaders{
     class AbstractShader{
         public:
         virtual ~AbstractShader(){}
-        protected:
-        friend class Renderer;
+        /**
+         * @brief Apply the shader. Run at the beginning of every draw call.
+         * Only call in the Renderer class.
+         */
+        virtual void apply();
+        /**
+         * @brief Create the shader. Run once before the first draw call.
+         * Only call in the Renderer class.
+         */
+        virtual void init();
         Renderer *_renderer;
+        protected:
         GLuint _programID;
         std::string _vertexShaderFilename;
         std::string _fragmentShaderFilename;
         std::string _genShaderPath(const std::string &shaderFileName);
         /**
-         * @brief Create the shader. Run once before the first draw call.
-         */
-        virtual void _init();
-        /**
          * @brief Loads the shaders from the path
          * 
          */
         void _loadShaders();
-        /**
-         * @brief Apply the shader. Run at the beginning of every draw call.
-         * 
-         */
-        virtual void _apply();
     };
 
     class Passthrough : public AbstractShader{
@@ -64,10 +64,8 @@ namespace Shaders{
 
     class MVP : public AbstractShader{
         public:
-            float cameraPosition[3] = {-2, -2, -2};
-            float cameraDirection[3] = {1, 1, 1};
-        private:
-        GLuint _viewMatrixID;
+        float cameraPosition[3] = {-2, -2, -2};
+        float cameraDirection[3] = {1, 1, 1};
         virtual void _init(){
             _vertexShaderFilename = "shaders/mvp_transform.vert";
             _fragmentShaderFilename = "shaders/passthrough.frag";
@@ -79,9 +77,9 @@ namespace Shaders{
             // Accept fragment if it closer to the camera than the former one
             glDepthFunc(GL_LESS);
         }
-        virtual void _apply(){
+        virtual void apply(){
             //Call super class apply method
-            AbstractShader::_apply();
+            AbstractShader::apply();
             //Recalculate the view matrix
             glm::vec3 _eye(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
             glm::vec3 _center(cameraPosition[0]+cameraDirection[0], 
@@ -94,6 +92,8 @@ namespace Shaders{
             //Apply the matrix
             glUniformMatrix4fv(_viewMatrixID, 1, GL_FALSE, &M[0][0]);
         }
+        private:
+        GLuint _viewMatrixID;
     };
 
     class TexturedMVP : public AbstractShader{
@@ -107,14 +107,9 @@ namespace Shaders{
          */
         glm::mat4 M() {return _M;}
         ~TexturedMVP(){ }
-        private:
-        GLuint _viewMatrixID;
-        int _textureWidth, _textureHeight, _textureChannels;
-        GLuint _textureID;
-        glm::mat4 _M;
         
 
-        virtual void _init(){
+        virtual void init(){
             //Create a new OpenGL texture
             glGenTextures(1, &_textureID); 
             glBindTexture(GL_TEXTURE_2D, _textureID); 
@@ -141,10 +136,13 @@ namespace Shaders{
             glEnable(GL_DEPTH_TEST);
             // Accept fragment if it closer to the camera than the former one
             glDepthFunc(GL_LESS);
+            // Enable alpha blending
+            // glEnable(GL_BLEND);  
+            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
         }
-        virtual void _apply(){
+        virtual void apply(){
             //Call super class apply method
-            AbstractShader::_apply();
+            AbstractShader::apply();
             //Recalculate the view matrix
             glm::vec3 _eye(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
             glm::vec3 _center(cameraPosition[0]+cameraDirection[0], 
@@ -160,6 +158,11 @@ namespace Shaders{
             //Apply the matrix
             glUniformMatrix4fv(_viewMatrixID, 1, GL_FALSE, &_M[0][0]);
         }
+        private:
+        GLuint _viewMatrixID;
+        int _textureWidth, _textureHeight, _textureChannels;
+        GLuint _textureID;
+        glm::mat4 _M;
     };
 }
 
