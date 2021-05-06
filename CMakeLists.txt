@@ -112,7 +112,7 @@ endif()
 # glad
 message("${BoldYellow}Using local copy of GLAD${ColorReset}")
 add_subdirectory(extern/glad)
-include_directories(extern/glad)
+include_directories(extern)
 
 # glfw
 message("${BoldYellow}Using local copy of GLFW${ColorReset}")
@@ -121,7 +121,6 @@ add_subdirectory(extern/glfw)
 # Dear ImGui
 message("${BoldYellow}Using local copy of ImGui${ColorReset}")
 add_subdirectory(extern/imgui)
-include_directories(extern)
 
 # glm
 message("${BoldYellow}Using local copy of GLM${ColorReset}")
