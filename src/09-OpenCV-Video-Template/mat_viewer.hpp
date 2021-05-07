@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 using namespace cv;

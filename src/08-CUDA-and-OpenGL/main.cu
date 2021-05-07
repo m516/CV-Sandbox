@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <glad.h>
+#include <glad/glad.h>
 #include <cuda_gl_interop.h>
 #include <GLFW/glfw3.h>
 

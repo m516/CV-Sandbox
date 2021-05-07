@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad.h>
+#include <glad/glad.h>
 #include <cuda_gl_interop.h>
 #include <opencv2/core.hpp>
 #include <stdio.h>
