@@ -1,30 +1,22 @@
 ﻿# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
+
 cmake_minimum_required (VERSION 3.10)
-
-# Define colors
-if(NOT WIN32)
-  string(ASCII 27 Esc)
-  set(ColorReset "${Esc}[m")
-  set(ColorBold  "${Esc}[1m")
-  set(Red         "${Esc}[31m")
-  set(Green       "${Esc}[32m")
-  set(Yellow      "${Esc}[33m")
-  set(Blue        "${Esc}[34m")
-  set(Magenta     "${Esc}[35m")
-  set(Cyan        "${Esc}[36m")
-  set(White       "${Esc}[37m")
-  set(BoldRed     "${Esc}[1;31m")
-  set(BoldGreen   "${Esc}[1;32m")
-  set(BoldYellow  "${Esc}[1;33m")
-  set(BoldBlue    "${Esc}[1;34m")
-  set(BoldMagenta "${Esc}[1;35m")
-  set(BoldCyan    "${Esc}[1;36m")
-  set(BoldWhite   "${Esc}[1;37m")
-endif()
-
 project ("CV-Sandbox" C CXX)
+
+
+###########################################################################################################
+#                                         Auto Configuration                                              #
+###########################################################################################################
+
+
+# Set the macro/helper directory 
+set(MACRO_DIRECTORY "${CMAKE_HOME_DIRECTORY}/CMake/macros")
+# Add some macros
+include("${MACRO_DIRECTORY}/colors.cmake")
+include("${MACRO_DIRECTORY}/get_3rd_party_libraries.cmake")
+include("${MACRO_DIRECTORY}/libhelpers.cmake")
 
 #Manually place all binaries into a folder under bin/
 set(BUILD_FULL_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/)
@@ -50,33 +42,20 @@ else()
 endif()
 message("${BoldMagenta}Media directory: ${MEDIA_DIR}${ColorReset}")
 
-# Set the macro/helper directory 
-set(MACRO_DIRECTORY ${CMAKE_HOME_DIRECTORY}/CMake/macros)
-message("${BoldMagenta}CMake utility directory: ${MACRO_DIRECTORY}${ColorReset}")
-# Add some macros
-include(${MACRO_DIRECTORY}/libhelpers.cmake)
 
-# Find packages used throughout this repository
 
-message("${BoldYellow}Searching for libraries...${ColorReset}")
 
-# OpenCV
-message("${BoldYellow}Finding OpenCV${ColorReset}")
-option(USE_OPENCV "Attempt to use OpenCV. If disabled, projects that require OpenCV can't build. Enabled by default" ON)
-if(USE_OPENCV)
-    find_package(OpenCV)
-    include_directories(${OpenCV_INCLUDE_DIRS})
-    if(OpenCV_FOUND)
-        message("${BoldYellow}OpenCV found.${ColorReset}")
-    else()
-        message("${BoldRed}OpenCV wasn't found.${ColorReset}")
-    endif()
 
-else()
-    message("${BoldRed}OpenCV was disabled.${ColorReset}")
-endif()
 
-# Threads
+
+
+
+
+###########################################################################################################
+#                                        Check compiler options                                           #
+###########################################################################################################
+
+############################################## Threads ####################################################
 message("${BoldYellow}Finding Threads${ColorReset}")
 option(USE_THREADS "Attempt to use pthread library. If disabled, some projects will use a single thread or refuse to build. Enabled by default" ON)
 if(USE_THREADS)
@@ -108,27 +87,7 @@ else()
     message("${BoldRed}Threads library was disabled.${ColorReset}")
 endif()
 
-
-# glad
-message("${BoldYellow}Using local copy of GLAD${ColorReset}")
-add_subdirectory(extern/glad)
-include_directories(extern)
-
-# glfw
-message("${BoldYellow}Using local copy of GLFW${ColorReset}")
-add_subdirectory(extern/glfw)
-
-# Dear ImGui
-message("${BoldYellow}Using local copy of ImGui${ColorReset}")
-add_subdirectory(extern/imgui)
-
-# glm
-message("${BoldYellow}Using local copy of GLM${ColorReset}")
-add_subdirectory(extern/glm)
-include_directories(extern/glm)
-
-message("${BoldYellow}Library search complete!${ColorReset}")
-
+############################################## OpenMP ####################################################
 message("${BoldYellow}Checking OpenMP support${ColorReset}")
 include(FindOpenMP)
 if(OpenMP_FOUND)
@@ -142,7 +101,7 @@ if(OpenMP_FOUND)
     endif()
 endif()
 
-#CUDA
+############################################## CUDA ####################################################
 message("${BoldYellow}Checking if CUDA files can be compiled${ColorReset}")
 option(USE_CUDA "Attempt to use CUDA. If disaled, projects that require CUDA can't build. Enabled by default" ON)
 #https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html
@@ -163,7 +122,16 @@ if(USE_CUDA)
 else()
     message("${BoldRed}CUDA was disabled.${ColorReset}")
 endif()
-    
 
-# Include sub-projects.
+
+
+###########################################################################################################
+#                                           3rd Party Libraries                                           #
+###########################################################################################################
+get_3rd_party_libraries("extern")
+
+
+###########################################################################################################
+#                                           Project Source code                                           #
+###########################################################################################################
 add_subdirectory ("src")

@@ -6,7 +6,7 @@
 
 include(${MACRO_DIRECTORY}/subdirlist.cmake)
 
-message("${BoldBlue}Searching for subprojects...${ColorReset}")
+message("${BoldMagenta}Searching for subprojects...${ColorReset}")
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 FOREACH(subdir ${SUBDIRS})
     message("${BoldBlue}--> Project: ${subdir}${ColorReset}")
