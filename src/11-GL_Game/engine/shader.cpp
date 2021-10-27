@@ -15,7 +15,7 @@ GLuint Shaders::Load(const char * vertex_file_path,const char * fragment_file_pa
 		VertexShaderCode = sstr.str();
 		VertexShaderStream.close();
 	}else{
-		printf("Impossible to open %s. Are you in the right directory? Don't forget to read the FAQ!\n", vertex_file_path);
+		printf("Impossible to open %s. Are you in the right directory?\n", vertex_file_path);
 		getchar();
 		return 0;
 	}
