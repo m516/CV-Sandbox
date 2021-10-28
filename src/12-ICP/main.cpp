@@ -3,65 +3,31 @@
 */
 
 #include "main.hpp"
-#include <thread>
 
 #include "happly/happly.h"
 
 #include "pointcloud/pointcloud.hpp"
 #include "pointcloud/renderer.hpp"
 #include "app/window.hpp"
+#include "app/GUI.hpp"
 
 using namespace std;
 
-
-
-/**
- * A helper function for terminating the program
- */
-void terminate(int errorCode) {
-	using namespace std;
-	cout << "Closing application";
-	//Exit
-	exit(errorCode);
-}
 
 
 
 
 int main()
 {
+	using namespace App::UI;
 
-	App::Window window(1080, 1080);
-	if (!window.open()) terminate(1);
+	//Create a new UI
+	init();
 
-	//Initialize shaders
-	PointCloud::Data<6> pointCloud = PointCloud::loadXYZRGB(MEDIA_DIRECTORY "german-shepherd-pointcloud.ply");
-	PointCloud::Renderer renderer;
-	renderer.set(pointCloud);
+	//Initialize the point cloud renderer
+	setPointCloud(MEDIA_DIRECTORY "german-shepherd-pointcloud.ply");
 
-
-
-	//The render loop
-	while (!window.shouldClose())
-	{
-		window.clear();
-
-
-
-		float cameraPosition[] = { -2, 1, 2 };
-		float cameraCenter[] = { 0, .5, 0 };
-		renderer.setViewLookAt(cameraPosition, cameraCenter);
-
-
-		renderer.display();
-
-		window.refresh();
-
-		using namespace std::this_thread;
-		using namespace std::chrono;
-		sleep_for(milliseconds(20));
-	}
-
-	window.close();
+	//Run the application
+	run();
 }
 

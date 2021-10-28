@@ -104,8 +104,9 @@ GLuint loadShaders(const char* vertex_file_path, const char* fragment_file_path)
 
 void Renderer::set(Data<6> xyzrgb) {
 	initialize();
-	xyz = std::vector<GLfloat>(xyzrgb.size()*3);
-	rgb = std::vector<GLfloat>(xyzrgb.size()*3);
+
+	std::vector<GLfloat> xyz (xyzrgb.size()*3);
+	std::vector<GLfloat> rgb (xyzrgb.size()*3);
 	for (size_t i = 0; i < xyzrgb.size(); i++) {
 		xyz[i * 3 + 0] = xyzrgb[i][0];
 		xyz[i * 3 + 1] = xyzrgb[i][1];
@@ -114,6 +115,40 @@ void Renderer::set(Data<6> xyzrgb) {
 		rgb[i * 3 + 1] = xyzrgb[i][4];
 		rgb[i * 3 + 2] = xyzrgb[i][5];
 	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferID);
+	glBufferData(GL_ARRAY_BUFFER, xyz.size() * sizeof(GLfloat), xyz.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
+	glBufferData(GL_ARRAY_BUFFER, rgb.size() * sizeof(GLfloat), rgb.data(), GL_STATIC_DRAW);
+
+	size = xyz.size();
+}
+
+void PointCloud::Renderer::setSparse(Data<6> xyzrgb, double percent)
+{
+	size = (size_t)(xyzrgb.size() * percent);
+	size_t incr = xyzrgb.size() / size;
+	size -= 1;
+
+	initialize();
+
+	std::vector<GLfloat> xyz (size * 3);
+	std::vector<GLfloat> rgb (size * 3);
+	for (size_t i = 0; i < size; i ++) {
+		xyz[i * 3 + 0] = xyzrgb[i*incr][0];
+		xyz[i * 3 + 1] = xyzrgb[i*incr][1];
+		xyz[i * 3 + 2] = xyzrgb[i*incr][2];
+		rgb[i * 3 + 0] = xyzrgb[i*incr][3];
+		rgb[i * 3 + 1] = xyzrgb[i*incr][4];
+		rgb[i * 3 + 2] = xyzrgb[i*incr][5];
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferID);
+	glBufferData(GL_ARRAY_BUFFER, xyz.size() * sizeof(GLfloat), xyz.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
+	glBufferData(GL_ARRAY_BUFFER, rgb.size() * sizeof(GLfloat), rgb.data(), GL_STATIC_DRAW);
+
+	size = xyz.size();
 }
 
 void PointCloud::Renderer::display()
@@ -126,15 +161,10 @@ void PointCloud::Renderer::display()
 	glClearDepth(100.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-
-
+	//glDisable(GL_DEPTH_TEST);
 
 	// Shading
 	glUseProgram(shaderID);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferID);
-	glBufferData(GL_ARRAY_BUFFER, xyz.size() * sizeof(GLfloat), xyz.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
-	glBufferData(GL_ARRAY_BUFFER, rgb.size() * sizeof(GLfloat), rgb.data(), GL_STATIC_DRAW);
 	//Uniforms
 	glUniformMatrix4fv(uniformViewID, 1, GL_FALSE, &viewMatrix[0][0]);
 	glUniformMatrix4fv(uniformTransformID, 1, GL_FALSE, &transformMatrix[0][0]);
@@ -149,7 +179,7 @@ void PointCloud::Renderer::display()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Draw the triangle!
-	glDrawArrays(GL_POINTS, 0, xyz.size()); // 3 index starting at 0
+	glDrawArrays(GL_POINTS, 0, size); // 3 index starting at 0
 
 	// End the drawing process
 	glDisableVertexAttribArray(0);

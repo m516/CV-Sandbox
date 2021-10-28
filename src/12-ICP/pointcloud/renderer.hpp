@@ -9,9 +9,8 @@
 namespace PointCloud {
 	class Renderer {
 	public:
-		std::vector<GLfloat> xyz;
-		std::vector<GLfloat> rgb;
 		void set(Data<6> xyzrgb);
+		void setSparse(Data<6> xyzrgb, double percent);
 		void display();
 		Renderer() {}
 
@@ -20,10 +19,11 @@ namespace PointCloud {
 		static glm::mat4 viewMatrix;
 		glm::mat4 transformMatrix;
 	private:
-		static bool Renderer::initialized;
+		static bool initialized;
 		static void initialize();
 		static GLuint shaderID;
 		static GLuint uniformViewID, uniformTransformID;
 		static GLuint vertexArrayID, positionBufferID, colorBufferID;
+		size_t size;
 	};
 }

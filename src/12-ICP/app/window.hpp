@@ -12,7 +12,9 @@ namespace App {
 		void refresh();
 		void close();
 		void clear();
+
 		GLFWwindow* window() { return _window; }
+		operator GLFWwindow*() { return _window; }
 	private:
 		GLFWwindow* _window;
 		bool _open = false;
