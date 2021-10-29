@@ -18,5 +18,6 @@ namespace App {
 	private:
 		GLFWwindow* _window;
 		bool _open = false;
+		float _framerate = 0.0;
 	};
 }

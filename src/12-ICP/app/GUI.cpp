@@ -109,30 +109,84 @@ void terminate(int errorCode) {
 
 
 
+float estimateSystemScale()
+{
+	//Set scale based on scale of monitor
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	float scale = 2.f;
+	glfwGetMonitorContentScale(monitor, &scale, nullptr);
+	return scale;
+}
+
+void setGuiScale(float guiScale) {
+	int fbw, fbh, ww, wh;
+	glfwGetFramebufferSize(window, &fbw, &fbh);
+	glfwGetWindowSize(window, &ww, &wh);
+	float pixelRatio = (float)fbw / (float)ww;
+	ImGui::GetIO().FontGlobalScale = guiScale / pixelRatio;
+}
+
+
 void viewControls()
 {
 
 	ImGui::Begin("Window Settings", &showViewControls);
 
-	static Soft::Property<float> cameraPosition[] = { -2, 1, 2 };
-	static Soft::Property<float>  cameraCenter[] = { 0, .5, 0 };
 
-	ImGui::SliderFloat("Camera position x", cameraPosition[0], -10, 10);
-	ImGui::SliderFloat("Camera position y", cameraPosition[1], -10, 10);
-	ImGui::SliderFloat("Camera position z", cameraPosition[2], -10, 10);
-	ImGui::SliderFloat("Camera center x",   cameraCenter[0],   -10, 10);
-	ImGui::SliderFloat("Camera center y",   cameraCenter[1],   -10, 10);
-	ImGui::SliderFloat("Camera center z",   cameraCenter[2],   -10, 10);
 
-	for (int i = 0; i < 3; i++) {
-		cameraPosition[i].stepExp(0.2);
-		cameraCenter[i].stepExp(0.2);
+	static Soft::PropertyArray<3, float> cameraPosition{ 0.f, 0.f, -5.f };
+	static Soft::PropertyArray<2, float> cameraRotation{ 0.f,0.f };
+
+	ImGui::SliderFloat3("Camera position", cameraPosition.targets.data(), -10, 10);
+	ImGui::SliderFloat2("Object rotation", cameraRotation.targets.data(), -10, 10);
+
+
+	cameraPosition.stepExp(0.3);
+	cameraRotation.stepExp(0.3);
+
+
+	pointCloudRenderer.setViewLookAround(cameraPosition, cameraRotation);
+
+	static bool autoSparse = true;
+	ImGui::Checkbox("Automatically hide points to boost framerate", &autoSparse);
+	static int sparsity = 0;
+	ImGuiIO& io = ImGui::GetIO();
+	if(autoSparse){
+		if (ImGui::GetFrameCount() % 100 == 0) {
+			if (io.Framerate < 30) {
+				sparsity++;
+				pointCloudRenderer.setSpaced(pointCloud, sparsity);
+			}
+			else if (io.Framerate > 60) {
+				if (sparsity != 0) sparsity--;
+				pointCloudRenderer.setSpaced(pointCloud, sparsity);
+			}
+		}
 	}
 
-	float cp[] = { cameraPosition[0], cameraPosition[1], cameraPosition[2] };
-	float cc[] = { cameraCenter[0], cameraCenter[1], cameraCenter[2] };
+	ImGui::Text("Framerate: ");
+	char buf[32];
+	sprintf(buf, "%d/%d", (int)(io.Framerate), 60);
+	ImGui::ProgressBar(io.Framerate / 60.f, ImVec2(0.f, 0.f), buf);
+	static bool sliderDown = false;
+	bool t = ImGui::SliderInt("Sparsity", &sparsity, 0, 25);
+	if (!t && sliderDown) {
+		pointCloudRenderer.setSpaced(pointCloud, sparsity);
+	};
+	sliderDown = t;
 
-	pointCloudRenderer.setViewLookAt(cp, cc);
+
+
+	
+	if (ImGui::IsMouseDown(0) && !io.WantCaptureMouse) {
+		ImVec2 mouseDelta = ImGui::GetMouseDragDelta();
+		mouseDelta.x /= ImGui::GetWindowWidth();
+		mouseDelta.y /= ImGui::GetWindowHeight();
+		ImGui::ResetMouseDragDelta();
+		cameraRotation.targets[0] += mouseDelta.x;
+		cameraRotation.targets[1] += mouseDelta.y;
+	}
+
 
 	ImGui::End();
 }
@@ -163,14 +217,13 @@ namespace App {
 
 	namespace UI {
 		void init() {
-			window = Window(1080, 1080);
+			window = Window(2400, 2400);
 			if (!window.open()) terminate(1);
 		}
 		void UI::setPointCloud(std::string filename)
 		{
 			pointCloud = PointCloud::loadXYZRGB(filename);
-			pointCloudRenderer.setSparse(pointCloud, 0.1);
-			//pointCloudRenderer.set(pointCloud);
+			pointCloudRenderer.set(pointCloud);
 		}
 		void UI::run()
 		{
@@ -181,6 +234,8 @@ namespace App {
 			ImGui_ImplGlfw_InitForOpenGL(window, true);
 			ImGui_ImplOpenGL3_Init("#version 130");
 			setStyle();
+
+			setGuiScale(estimateSystemScale());
 
 			while (window.open() && !window.shouldClose()) {
 

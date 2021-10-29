@@ -151,6 +151,33 @@ void PointCloud::Renderer::setSparse(Data<6> xyzrgb, double percent)
 	size = xyz.size();
 }
 
+
+void PointCloud::Renderer::setSpaced(Data<6> xyzrgb, int howManyToSkip)
+{
+	size = (size_t)(xyzrgb.size() / (howManyToSkip+1));
+	int incr = howManyToSkip + 1;
+
+	initialize();
+
+	std::vector<GLfloat> xyz(size * 3);
+	std::vector<GLfloat> rgb(size * 3);
+	for (size_t i = 0; i < size; i++) {
+		xyz[i * 3 + 0] = xyzrgb[i * incr][0];
+		xyz[i * 3 + 1] = xyzrgb[i * incr][1];
+		xyz[i * 3 + 2] = xyzrgb[i * incr][2];
+		rgb[i * 3 + 0] = xyzrgb[i * incr][3];
+		rgb[i * 3 + 1] = xyzrgb[i * incr][4];
+		rgb[i * 3 + 2] = xyzrgb[i * incr][5];
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferID);
+	glBufferData(GL_ARRAY_BUFFER, xyz.size() * sizeof(GLfloat), xyz.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
+	glBufferData(GL_ARRAY_BUFFER, rgb.size() * sizeof(GLfloat), rgb.data(), GL_STATIC_DRAW);
+
+	size = xyz.size();
+}
+
 void PointCloud::Renderer::display()
 {
 	// Configuration
@@ -192,12 +219,22 @@ void PointCloud::Renderer::setViewLookAt(float cameraPosition[3], float cameraCe
 	glm::vec3 _center(cameraCenter[0], cameraCenter[1], cameraCenter[2]);
 	glm::vec3 _up(0, 1, 0);
 
-	glm::mat4 v = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 10.f) * glm::lookAt(_eye, _center, _up);
-	glm::mat4 t = glm::mat4(1.0);
+	glm::mat4 v = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 1000.f) * glm::lookAt(_eye, _center, _up);
 
 	viewMatrix = v;
-	transformMatrix = t;
 }
+
+void PointCloud::Renderer::setViewLookAround(float cameraPosition[3], float rotationXY[2])
+{
+	glm::mat4 v(1.0);
+	v = glm::translate(v, glm::vec3(cameraPosition[0], cameraPosition[1], cameraPosition[2]));
+	v = glm::rotate(v, rotationXY[1], glm::vec3(1, 0, 0));
+	v = glm::rotate(v, rotationXY[0], glm::vec3(0, 1, 0));
+	v = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 1000.f) * v;
+
+	viewMatrix = v;
+}
+
 
 
 void PointCloud::Renderer::initialize()
@@ -216,4 +253,6 @@ void PointCloud::Renderer::initialize()
 	// Make a VBO for the positions
 	glGenBuffers(1, &positionBufferID);
 	glGenBuffers(1, &colorBufferID);
+
+
 }
