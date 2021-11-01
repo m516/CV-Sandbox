@@ -25,7 +25,7 @@ int main()
 	init();
 
 	//Initialize the point cloud renderer
-	setPointCloud(MEDIA_DIRECTORY "german-shepherd.ply");
+	setPointCloud(MEDIA_DIRECTORY "german-shepherd-pointcloud.ply");
 
 	//Run the application
 	run();

@@ -221,12 +221,12 @@ namespace App {
 			window = Window(2400, 2400);
 			if (!window.open()) terminate(1);
 		}
-		void UI::setPointCloud(std::string filename)
+		void setPointCloud(std::string filename)
 		{
 			pointCloud = PointCloud::loadXYZRGB(filename);
 			pointCloudRenderer.set(pointCloud);
 		}
-		void UI::run()
+		void run()
 		{
 			// Setup Dear ImGui context
 			IMGUI_CHECKVERSION();
