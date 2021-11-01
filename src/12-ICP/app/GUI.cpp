@@ -174,6 +174,7 @@ void viewControls()
 		pointCloudRenderer.setSpaced(pointCloud, sparsity);
 	};
 	sliderDown = t;
+	if (ImGui::SliderFloat("Point size", &PointCloud::Renderer::pointSize, 1.f, 16.f));
 
 
 

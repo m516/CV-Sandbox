@@ -6,10 +6,11 @@ using namespace PointCloud;
 
 
 GLuint Renderer::shaderID;
-GLuint Renderer::uniformViewID, Renderer::uniformTransformID;
+GLuint Renderer::uniformTransformID, Renderer::uniformPointSizeID;
 GLuint Renderer::vertexArrayID, Renderer::positionBufferID, Renderer::colorBufferID;
 bool Renderer::initialized = false;
 glm::mat4 Renderer::viewMatrix;
+GLfloat Renderer::pointSize = 4.f;
 
 
 GLuint loadShaders(const char* vertex_file_path, const char* fragment_file_path) {
@@ -193,8 +194,9 @@ void PointCloud::Renderer::display()
 	// Shading
 	glUseProgram(shaderID);
 	//Uniforms
-	glUniformMatrix4fv(uniformViewID, 1, GL_FALSE, &viewMatrix[0][0]);
-	glUniformMatrix4fv(uniformTransformID, 1, GL_FALSE, &transformMatrix[0][0]);
+	glm::mat4 transform = transformMatrix * viewMatrix;
+	glUniformMatrix4fv(uniformTransformID, 1, GL_FALSE, &transform[0][0]);
+	glPointSize(pointSize);
 
 	// 1st attribute buffer : vertices
 	glEnableVertexAttribArray(0);
@@ -243,8 +245,7 @@ void PointCloud::Renderer::initialize()
 	initialized = true;
 
 	//Initialize shaders
-	shaderID = loadShaders(MEDIA_DIRECTORY "shaders/pointcloud.vert", MEDIA_DIRECTORY "shaders/passthrough.frag");
-	uniformViewID = glGetUniformLocation(shaderID, "ViewMatrix");
+	shaderID = loadShaders(MEDIA_DIRECTORY "shaders/pointcloud.vert", MEDIA_DIRECTORY "shaders/pointcloud.frag");
 	uniformTransformID = glGetUniformLocation(shaderID, "TransformMatrix");
 
 	// Make a vertex array

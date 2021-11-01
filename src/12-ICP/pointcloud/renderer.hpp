@@ -19,12 +19,13 @@ namespace PointCloud {
 		void setViewLookAround(float cameraPosition[3], float rotationXY[2]);
 
 		static glm::mat4 viewMatrix;
+		static GLfloat pointSize;
 		glm::mat4 transformMatrix = glm::mat4(1.0);
 	private:
 		static bool initialized;
 		static void initialize();
 		static GLuint shaderID;
-		static GLuint uniformViewID, uniformTransformID;
+		static GLuint uniformTransformID, uniformPointSizeID;
 		static GLuint vertexArrayID, positionBufferID, colorBufferID;
 		size_t size;
 	};
