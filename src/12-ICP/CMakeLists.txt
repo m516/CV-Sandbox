@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.8)
 set(EXECUTABLE_NAME 12_ICP)
 
 # Add source to this project's executable.
-add_executable (${EXECUTABLE_NAME} "main.cpp" "main.hpp"  "pointcloud/pointcloud.hpp" "pointcloud/pointcloud.cpp" "pointcloud/renderer.hpp" "pointcloud/renderer.cpp"   "app/window.hpp" "app/window.cpp" "app/property.hpp"  "app/GUI.hpp" "app/GUI.cpp")
+add_executable (${EXECUTABLE_NAME} "main.cpp" "main.hpp"  "pointcloud/pointcloud.hpp" "pointcloud/pointcloud.cpp" "pointcloud/renderer.hpp" "pointcloud/renderer.cpp"   "app/window.hpp" "app/window.cpp" "app/property.hpp"  "app/GUI.hpp" "app/GUI.cpp" "pointcloud/icp.hpp" )
 
 # Add tests and install targets if needed.
 target_link_libraries (${EXECUTABLE_NAME} glm glad glfw imgui)

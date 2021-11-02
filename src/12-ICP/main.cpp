@@ -7,7 +7,7 @@
 #include "happly/happly.h"
 
 #include "pointcloud/pointcloud.hpp"
-#include "pointcloud/renderer.hpp"
+#include "pointcloud/icp.hpp"
 #include "app/window.hpp"
 #include "app/GUI.hpp"
 
@@ -21,12 +21,22 @@ int main()
 {
 	using namespace App::UI;
 
+
+
+	// PointCloud::Data<6> p1 = PointCloud::loadXYZRGB("C:/Users/Beta/Documents/school/ME456/project/mesh1.ply");
+	// PointCloud::Data<6> p2 = PointCloud::loadXYZRGB("C:/Users/Beta/Documents/school/ME456/project/mesh2.ply");
+	// PointCloud::ICP<6>(p1, p1);
+	// PointCloud::ICP<6>(p1, p2);
+	// PointCloud::ICP<6>(p2, p2);
+
 	//Create a new UI
 	init();
-
+	
+	
 	//Initialize the point cloud renderer
-	setPointCloud(MEDIA_DIRECTORY "german-shepherd-pointcloud.ply");
-
+	//setPointCloud(MEDIA_DIRECTORY "german-shepherd-pointcloud.ply");
+	setPointCloud("C:/Users/Beta/Documents/school/ME456/project/mesh1.ply");
+	
 	//Run the application
 	run();
 }

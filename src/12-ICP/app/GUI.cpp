@@ -137,27 +137,29 @@ void viewControls()
 	static Soft::PropertyArray<3, float> cameraPosition{ 0.f, 0.f, -5.f };
 	static Soft::PropertyArray<2, float> cameraRotation{ 0.f,0.f };
 
-	ImGui::SliderFloat3("Camera position", cameraPosition.targets.data(), -10, 10);
-	ImGui::SliderFloat2("Object rotation", cameraRotation.targets.data(), -10, 10);
+	ImGui::InputFloat3("Camera position", cameraPosition.targets.data(), 3);
+	ImGui::InputFloat2("Object rotation", cameraRotation.targets.data(), 3);
+
+	static float rigidness = 0.5f;
 
 
-	cameraPosition.stepExp(0.3);
-	cameraRotation.stepExp(0.3);
+	cameraPosition.stepExp(rigidness* rigidness);
+	cameraRotation.stepExp(rigidness* rigidness);
 
 
 	pointCloudRenderer.setViewLookAround(cameraPosition, cameraRotation);
 
 	static bool autoSparse = true;
 	ImGui::Checkbox("Automatically hide points to boost framerate", &autoSparse);
-	static int sparsity = 0;
+	static int sparsity = 32;
 	ImGuiIO& io = ImGui::GetIO();
 	if(autoSparse){
-		if (ImGui::GetFrameCount() % 100 == 0) {
+		if (ImGui::GetFrameCount() % 10 == 0) {
 			if (io.Framerate < 30) {
 				sparsity++;
 				pointCloudRenderer.setSpaced(pointCloud, sparsity);
 			}
-			else if (io.Framerate > 60) {
+			else if (io.Framerate > 59) {
 				if (sparsity != 0) sparsity--;
 				pointCloudRenderer.setSpaced(pointCloud, sparsity);
 			}
@@ -174,11 +176,17 @@ void viewControls()
 		pointCloudRenderer.setSpaced(pointCloud, sparsity);
 	};
 	sliderDown = t;
-	if (ImGui::SliderFloat("Point size", &PointCloud::Renderer::pointSize, 1.f, 16.f));
+	ImGui::SliderFloat("Point size", &PointCloud::Renderer::pointSize, 1.f, 16.f);
+	ImGui::SliderFloat("UI Rigidness", &rigidness, 0.1f, 1.f);
 
 
 
 	
+
+
+	ImGui::End();
+
+
 	if (ImGui::IsMouseDown(0) && !io.WantCaptureMouse) {
 		ImVec2 mouseDelta = ImGui::GetMouseDragDelta();
 		mouseDelta.x /= ImGui::GetWindowWidth();
@@ -188,8 +196,13 @@ void viewControls()
 		cameraRotation.targets[1] += mouseDelta.y;
 	}
 
-
-	ImGui::End();
+	if (ImGui::IsMouseDown(1) && !io.WantCaptureMouse) {
+		ImVec2 delta = io.MouseDelta;
+		delta.x /= ImGui::GetWindowWidth();
+		delta.y /= ImGui::GetWindowHeight();
+		ImGui::ResetMouseDragDelta();
+		cameraPosition.targets[2] *= (1.f+delta.y);
+	}
 }
 
 
@@ -218,7 +231,7 @@ namespace App {
 
 	namespace UI {
 		void init() {
-			window = Window(2400, 2400);
+			window = Window(720, 480);
 			if (!window.open()) terminate(1);
 		}
 		void setPointCloud(std::string filename)

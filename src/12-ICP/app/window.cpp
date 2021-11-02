@@ -32,7 +32,7 @@ namespace App {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwSetErrorCallback(error_callback);
-		_window = glfwCreateWindow(width, height, "Hello window :)", NULL, NULL);
+		_window = glfwCreateWindow(width, height, "CV-Sandbox", NULL, NULL);
 		if (!_window)
 		{
 			cerr << "GLFW failed to create a window and/or OpenGL context :(";
