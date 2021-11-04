@@ -130,63 +130,12 @@ void setGuiScale(float guiScale) {
 void viewControls()
 {
 
-	ImGui::Begin("Window Settings", &showViewControls);
-
-
-
 	static Soft::PropertyArray<3, float> cameraPosition{ 0.f, 0.f, -5.f };
 	static Soft::PropertyArray<2, float> cameraRotation{ 0.f,0.f };
-
-	ImGui::InputFloat3("Camera position", cameraPosition.targets.data(), 3);
-	ImGui::InputFloat2("Object rotation", cameraRotation.targets.data(), 3);
-
 	static float rigidness = 0.5f;
-
-
-	cameraPosition.stepExp(rigidness* rigidness);
-	cameraRotation.stepExp(rigidness* rigidness);
-
-
-	pointCloudRenderer.setViewLookAround(cameraPosition, cameraRotation);
-
-	static bool autoSparse = true;
-	ImGui::Checkbox("Automatically hide points to boost framerate", &autoSparse);
-	static int sparsity = 32;
+	static int sparsity = 0;
+	static bool autoSparse = false;
 	ImGuiIO& io = ImGui::GetIO();
-	if(autoSparse){
-		if (ImGui::GetFrameCount() % 10 == 0) {
-			if (io.Framerate < 30) {
-				sparsity++;
-				pointCloudRenderer.setSpaced(pointCloud, sparsity);
-			}
-			else if (io.Framerate > 59) {
-				if (sparsity != 0) sparsity--;
-				pointCloudRenderer.setSpaced(pointCloud, sparsity);
-			}
-		}
-	}
-
-	ImGui::Text("Framerate: ");
-	char buf[32];
-	sprintf(buf, "%d/%d", (int)(io.Framerate), 60);
-	ImGui::ProgressBar(io.Framerate / 60.f, ImVec2(0.f, 0.f), buf);
-	static bool sliderDown = false;
-	bool t = ImGui::SliderInt("Sparsity", &sparsity, 0, 25);
-	if (!t && sliderDown) {
-		pointCloudRenderer.setSpaced(pointCloud, sparsity);
-	};
-	sliderDown = t;
-	ImGui::SliderFloat("Point size", &PointCloud::Renderer::pointSize, 1.f, 16.f);
-	ImGui::SliderFloat("UI Rigidness", &rigidness, 0.1f, 1.f);
-
-
-
-	
-
-
-	ImGui::End();
-
-
 	if (ImGui::IsMouseDown(0) && !io.WantCaptureMouse) {
 		ImVec2 mouseDelta = ImGui::GetMouseDragDelta();
 		mouseDelta.x /= ImGui::GetWindowWidth();
@@ -201,8 +150,49 @@ void viewControls()
 		delta.x /= ImGui::GetWindowWidth();
 		delta.y /= ImGui::GetWindowHeight();
 		ImGui::ResetMouseDragDelta();
-		cameraPosition.targets[2] *= (1.f+delta.y);
+		cameraPosition.targets[2] *= (1.f + delta.y);
 	}
+
+	if (showViewControls) {
+		ImGui::Begin("Window Settings", &showViewControls);
+
+		ImGui::DragFloat3("Camera position", cameraPosition.targets.data(), 3);
+		ImGui::DragFloat2("Object rotation", cameraRotation.targets.data(), 3);
+		ImGui::Checkbox("Automatically hide points to boost framerate", &autoSparse);
+		ImGui::Text("Framerate: ");
+		char buf[32];
+		sprintf(buf, "%d/%d", (int)(io.Framerate), 60);
+		ImGui::ProgressBar(io.Framerate / 60.f, ImVec2(0.f, 0.f), buf);
+		static bool sliderDown = false;
+		bool t = ImGui::SliderInt("Sparsity", &sparsity, 0, 25);
+		if (!t && sliderDown) {
+			pointCloudRenderer.setSpaced(pointCloud, sparsity);
+		};
+		sliderDown = t;
+		ImGui::SliderFloat("Point size", &PointCloud::Renderer::pointSize, 1.f, 16.f);
+		ImGui::SliderFloat("UI Rigidness", &rigidness, 0.1f, 1.f);
+
+		ImGui::End();
+	}
+
+
+	if (autoSparse) {
+		if (ImGui::GetFrameCount() % 10 == 0) {
+			if (io.Framerate < 30) {
+				sparsity++;
+				pointCloudRenderer.setSpaced(pointCloud, sparsity);
+			}
+			else if (io.Framerate > 59) {
+				if (sparsity != 0) sparsity--;
+				pointCloudRenderer.setSpaced(pointCloud, sparsity);
+			}
+		}
+	}
+	cameraPosition.stepExp(rigidness * rigidness);
+	cameraRotation.stepExp(rigidness * rigidness);
+	pointCloudRenderer.aspectRatio = window.getAspectRatio();
+	pointCloudRenderer.setViewLookAround(cameraPosition, cameraRotation);
+
 }
 
 
@@ -220,7 +210,7 @@ void mainMenu()
 	}
 
 	viewControls();
-	ImGui::ShowDemoWindow(&showDemoWindow);
+	if(showDemoWindow)   ImGui::ShowDemoWindow(&showDemoWindow);
 }
 
 

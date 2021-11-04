@@ -15,6 +15,13 @@ namespace App {
 
 		GLFWwindow* window() { return _window; }
 		operator GLFWwindow*() { return _window; }
+		void resize(int width, int height, bool doResize = true);
+		void getDimensions(int& w, int& h);
+		int getWidth();
+		int getHeight();
+		float getAspectRatio();
+
+
 	private:
 		GLFWwindow* _window;
 		bool _open = false;

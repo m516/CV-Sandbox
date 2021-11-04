@@ -18,6 +18,7 @@ namespace PointCloud {
 		void setViewLookAt(float cameraPosition[3], float centerOfFocus[3]);
 		void setViewLookAround(float cameraPosition[3], float rotationXY[2]);
 
+		float aspectRatio = 1.f;
 		static glm::mat4 viewMatrix;
 		static GLfloat pointSize;
 		glm::mat4 transformMatrix = glm::mat4(1.0);

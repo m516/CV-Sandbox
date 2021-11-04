@@ -1,5 +1,8 @@
 #include "window.hpp"
 #include <iostream>
+#include <vector>
+
+std::vector<App::Window*> global_appWindowList(1);
 
 
 
@@ -10,6 +13,14 @@
 void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
+}
+
+static void resize_callback(GLFWwindow* window, int new_width, int new_height) {
+	glViewport(0, 0, new_width, new_height);
+	for (int i = 0; i < global_appWindowList.size(); i++) {
+		if (global_appWindowList[i] == nullptr) continue;
+		if (global_appWindowList[i]->window() == window) global_appWindowList[i]->resize(new_height, new_height, false);
+	}
 }
 
 
@@ -38,6 +49,7 @@ namespace App {
 			cerr << "GLFW failed to create a window and/or OpenGL context :(";
 			return;
 		}
+		glfwSetWindowSizeCallback(_window, resize_callback);
 		glfwMakeContextCurrent(_window);
 		glfwSwapInterval(1);
 		//  Initialize glad (must occur AFTER window creation or glad will error)
@@ -48,6 +60,8 @@ namespace App {
 
 
 		_open = true;
+
+		global_appWindowList.push_back(this);
 	}
 
 	bool Window::shouldClose()
@@ -70,6 +84,41 @@ namespace App {
 	void Window::clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the window
+	}
+
+	void Window::resize(int width, int height, bool doResize)
+	{
+		if (doResize)
+			glfwSetWindowSize(_window, width, height);
+
+		glfwMakeContextCurrent(_window);
+		glViewport(0, 0, width, height);
+	}
+
+	void Window::getDimensions(int& w, int& h)
+	{
+		glfwGetWindowSize(_window, &w, &h);
+	}
+
+	int Window::getWidth()
+	{
+		int w, h;
+		glfwGetWindowSize(_window, &w, &h);
+		return w;
+	}
+
+	int Window::getHeight()
+	{
+		int w, h;
+		glfwGetWindowSize(_window, &w, &h);
+		return h;
+	}
+
+	float Window::getAspectRatio()
+	{
+		int w, h;
+		glfwGetWindowSize(_window, &w, &h);
+		return (float)(w) / (float)(h);
 	}
 
 }

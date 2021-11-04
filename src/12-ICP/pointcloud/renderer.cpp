@@ -221,7 +221,7 @@ void PointCloud::Renderer::setViewLookAt(float cameraPosition[3], float cameraCe
 	glm::vec3 _center(cameraCenter[0], cameraCenter[1], cameraCenter[2]);
 	glm::vec3 _up(0, 1, 0);
 
-	glm::mat4 v = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 1000.f) * glm::lookAt(_eye, _center, _up);
+	glm::mat4 v = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.f) * glm::lookAt(_eye, _center, _up);
 
 	viewMatrix = v;
 }
@@ -232,7 +232,7 @@ void PointCloud::Renderer::setViewLookAround(float cameraPosition[3], float rota
 	v = glm::translate(v, glm::vec3(cameraPosition[0], cameraPosition[1], cameraPosition[2]));
 	v = glm::rotate(v, rotationXY[1], glm::vec3(1, 0, 0));
 	v = glm::rotate(v, rotationXY[0], glm::vec3(0, 1, 0));
-	v = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 1000.f) * v;
+	v = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.f) * v;
 
 	viewMatrix = v;
 }

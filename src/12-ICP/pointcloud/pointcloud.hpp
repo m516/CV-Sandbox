@@ -4,14 +4,15 @@
 #include <string>
 #include <array>
 #include "happly/happly.h"
+#include "point.hpp"
 
 namespace PointCloud {
 	
 	template<std::size_t D>	
-	class Data: public std::vector<std::array<float, D>> {
+	class Data: public std::vector<Point<D>> {
 
 	public:
-		Data(size_t initial_size) :std::vector<std::array<float, D>>(initial_size) {};
+		Data(size_t initial_size) :std::vector<Point<D>>(initial_size) {};
 		Data() {};
 	};
 
