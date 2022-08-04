@@ -42,9 +42,9 @@ namespace PointCloud {
 	{
 		std::cout << "Closest point returns " << closestPoint<D>(pointCloud1, pointCloud2) << std::endl;
 
-		glm::mat4 transformMatrix();
+		glm::mat4 transformMatrix;
 
-		return glm::mat4();
+		return glm::mat4(); //TODO stub
 	}
 
 }

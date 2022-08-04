@@ -11,7 +11,7 @@ namespace PointCloud {
 		float distanceSquaredTo(const Point<D> other) {
 			float r = 0.f;
 			for (int i = 0; i < D; i++) {
-				float t = p2[0] - p1[0];
+				float t = this->at(0) - other[0];
 				r += t * t;
 			}
 			return r;
