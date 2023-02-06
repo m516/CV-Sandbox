@@ -13,7 +13,7 @@
 
 enum BlockType{GENERIC = 0, ROTATE_LEFT = 1, ROTATE_RIGHT = 2, GOAL = 3, ANTIGRAVITY = 4};
 
-#define HARD_LEVEL 1
+// #define HARD_LEVEL 1
 
 #ifdef HARD_LEVEL
 
@@ -116,29 +116,29 @@ class World4_WYSIWYG : public World{
                 //Color the block based on its type
                 switch(blocks[i][3]){
                     case BlockType::ROTATE_LEFT:
-                        specialBlockTemplate->_r = 1;
-                        specialBlockTemplate->_g = 0;
-                        specialBlockTemplate->_b = 0;
+                        specialBlockTemplate->_r = 0.8;
+                        specialBlockTemplate->_g = 0.2;
+                        specialBlockTemplate->_b = 0.2;
                         break;
                     case BlockType::ROTATE_RIGHT:
-                        specialBlockTemplate->_r = 0;
-                        specialBlockTemplate->_g = 0;
-                        specialBlockTemplate->_b = 1;
+                        specialBlockTemplate->_r = 0.2;
+                        specialBlockTemplate->_g = 0.2;
+                        specialBlockTemplate->_b = 0.8;
                         break;
                     case BlockType::GOAL:
-                        specialBlockTemplate->_r = 0;
-                        specialBlockTemplate->_g = 1;
-                        specialBlockTemplate->_b = 0;
+                        specialBlockTemplate->_r = 0.2;
+                        specialBlockTemplate->_g = 0.8;
+                        specialBlockTemplate->_b = 0.2;
                         break;
                     case BlockType::ANTIGRAVITY:
-                        specialBlockTemplate->_r = 0;
-                        specialBlockTemplate->_g = 1;
-                        specialBlockTemplate->_b = 1;
+                        specialBlockTemplate->_r = 0.2;
+                        specialBlockTemplate->_g = 0.8;
+                        specialBlockTemplate->_b = 0.8;
                         break;
                     default:
-                        specialBlockTemplate->_r = 1;
-                        specialBlockTemplate->_g = 0;
-                        specialBlockTemplate->_b = 1;
+                        specialBlockTemplate->_r = 0.8;
+                        specialBlockTemplate->_g = 0.2;
+                        specialBlockTemplate->_b = 0.8;
                         break;
                 }
                 _registerGameObject(specialBlockTemplate);
@@ -279,6 +279,9 @@ class World4_WYSIWYG : public World{
             _mvpShader->cameraDirection[0] = (_mvpShader->cameraDirection[0]+cameraAngles[direction][0]*delta)/(1+delta);
             _mvpShader->cameraDirection[1] = (_mvpShader->cameraDirection[1]+cameraAngles[direction][1]*delta)/(1+delta);
             _mvpShader->cameraDirection[2] = (_mvpShader->cameraDirection[2]+cameraAngles[direction][2]*delta)/(1+delta);
+
+            _mvpShader->cameraPosition[0] += (sin(gameTime()/5)/2   + sin(gameTime()/21.853)  )/100; // TODO
+            _mvpShader->cameraPosition[1] += (cos(gameTime()/2.5)/2 + cos(gameTime()/32.544)  )/100; // TODO
             
         }
         World::update();

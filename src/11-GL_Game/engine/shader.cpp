@@ -110,6 +110,6 @@ void Shaders::AbstractShader::init(){
 }
 
 void Shaders::AbstractShader::apply(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glUseProgram(_programID);
 }

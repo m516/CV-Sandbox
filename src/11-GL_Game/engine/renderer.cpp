@@ -22,7 +22,8 @@ void Renderer::init(World *world){
 	glfwSetErrorCallback(error_callback);
 
 	//GLFW creates a window and its OpenGL context with the next function
-	_window = glfwCreateWindow(1080*2, 1080*2, "Simple Graphics Processor Game Engine", NULL, NULL);
+	_window = glfwCreateWindow(720, 720, "Simple Graphics Processor Game Engine", NULL, NULL);
+	// _window = glfwCreateWindow(256, 256, "Simple Graphics Processor Game Engine", glfwGetPrimaryMonitor(), NULL);
 
 	//Check for errors (which would happen if creating a window fails
 	if (!_window)
@@ -41,7 +42,7 @@ void Renderer::init(World *world){
     }
 
 	//Set the clear color
-	glClearColor(.1f, .1f, .12f, .1f);
+	glClearColor(.05f, .05f, .01f, 2.0f);
 
 	//Shaders
 	_shader = world->_shader;

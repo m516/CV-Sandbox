@@ -10,5 +10,5 @@ out vec4 fColor;
 void main(void) {
   //vec4 t = vColor;
   //t = t * vPos.y;
-  fColor = texture(blockTexture, vTexCoord) * vec4(vColor, 0);
+  fColor = texture(blockTexture, vTexCoord) * vec4(vColor, 1);
 }

@@ -116,8 +116,8 @@ namespace Shaders{
             // set the texture wrapping/filtering options (on the currently bound texture object)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             //Load the texture
             unsigned char* textureData;
             const char* texturePath = MEDIA_DIRECTORY "texturedBlocks.png";
@@ -125,6 +125,7 @@ namespace Shaders{
             printf("Texture: %d x %d x %d\n", _textureWidth, _textureHeight, _textureChannels);
             if(!textureData) RUNTIME_ERROR("Failed to load texture at '%s'\n", texturePath); 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _textureWidth, _textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+            glGenerateMipmap(GL_TEXTURE_2D);
             stbi_image_free(textureData);
             //Load the shaders
             _vertexShaderFilename = "shaders/textured_mvp_transform.vert";
@@ -137,8 +138,8 @@ namespace Shaders{
             // Accept fragment if it closer to the camera than the former one
             glDepthFunc(GL_LESS);
             // Enable alpha blending
-            // glEnable(GL_BLEND);  
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+            glEnable(GL_BLEND);  
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);  
         }
         virtual void apply(){
             //Call super class apply method
