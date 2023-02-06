@@ -10,7 +10,7 @@ If this document is outdated, please don't heasitate to create a new [issue](htt
 
 ## Table of Contents <!-- omit in toc -->
 - [My Personal Setup](#my-personal-setup)
-  - [Windows 10](#windows-10)
+  - [Windows 11](#windows-11)
   - [Ubuntu WSL 2](#ubuntu-wsl-2)
   - [Ubuntu](#ubuntu)
 - [Computer Vision Libraries I Use](#computer-vision-libraries-i-use)
@@ -19,7 +19,7 @@ If this document is outdated, please don't heasitate to create a new [issue](htt
 ------------------------------
 
 ## My Personal Setup
-### Windows 10
+### Windows 11
 Below is a list of all software I'm using on a Windows 10 device to build and run the CV projects in
 this repository.
 All the software I use right now is free.
@@ -31,11 +31,15 @@ All the software I use right now is free.
 * [vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) is a library package manager.
 * [Git](https://git-scm.com/) is a great version control system, and I use it extensively for other projects. 
   It's integrated in Visual Studio and VS Code, but I prefer to use the command line or 
-  [Github Desktop](https://desktop.github.com/) when dealing with version control.
+  [Github Desktop](https://desktop.github.com/) (optional) sometimes when working with version control.
 
 
 ### Ubuntu WSL 2
-The most difficult part about this project on WSL 2 was running graphical applications with OpenGL. I managed to do this by following the instructions [here](https://gist.github.com/RSchneyer/8ae559751f10e92e16399f679acb1097).
+**Windows 11**
+On Windows 11, Mesa graphics drivers should work out of the box, using the native Windows RDP client as a graphics output.
+
+**Windows 10**
+Setting up graphics for WSL on Windows 10 is a bit more convoluted, but instructions can be found [here](https://gist.github.com/RSchneyer/8ae559751f10e92e16399f679acb1097).
 
 After completing these instructions, I needed to allow VcXsrv through the firewall and run the following command in Ubuntu each time I log into a terminal:
 ```
@@ -60,20 +64,18 @@ All the software I use right now is free.
 ## Computer Vision Libraries I Use
 * [OpenCV](https://opencv.org/) is an extensive, fast open-source computer vision library. 
 It can be installed in [many different ways](https://docs.opencv.org/master/df/d65/tutorial_table_of_content_introduction.html).
-I personally use `sudo apt-get install libopencv-dev` to install OpenCV on Ubuntu, but vcpkg is an
-alternate
-See ["Installing OpenCV via `vcpkg`"](#installing-opencv-via-vcpkg) for more info about this processes.
+I personally use `sudo apt-get install libopencv-dev` to install OpenCV on Ubuntu, but `vcpkg` works too. (See ["Installing OpenCV via `vcpkg`"](#installing-opencv-via-vcpkg))
 
 ## Installing OpenCV via `vcpkg`
 [vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) is an intuitive, cross-platform 
 library package manager for C and C++, and it takes minimal effort to integrate with  Visual Studio, VS Code, 
 and any CMake setup.
 
-If you have vcpkg installed, run the following command:
+If you have vcpkg installed, run the following command (assuming compiling for a modern device with an AMD/Intel CPU):
 ```bash
 vcpkg install opencv4:x64-windows
 ```
-and vcpkg will install the 64-bit version of OpenCV.
+and vcpkg will install the 64-bit x86 version of OpenCV.
 
 If you want to learn more about vcpkg, here are the links that helped me use it:
 * [Microsoft's official documentation](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019)
