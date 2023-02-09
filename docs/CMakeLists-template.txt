@@ -1,0 +1,66 @@
+# Below is a template CMake script for creating new projects
+
+
+#   Disable this project if CUDA is unavailable
+# disable_if_cuda_not_found()
+
+#   Disable this project if OpenCV is unavailable
+# disable_if_opencv_not_found()
+
+#   Disable this project if the Pthread library is not available
+# disable_if_pthread_not_found()
+
+#   Disable this project if not built on/for a Unix machine
+# enforce_unix()
+
+# This is the name of the executable
+set(EXECUTABLE_NAME INSERT_PROJECT_NAME_HERE)
+
+set(PROJECT_CUDA
+# Place .cu files here
+)
+
+set(PROJECT_SOURCES
+#Place .cpp files here
+)
+
+set(PROJECT_HEADERS
+#Place .h files here
+)
+
+# Add source to this project's executable.
+add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${PROJECT_CUDA})
+
+
+# Add tests and install targets if needed.
+# Add or remove project dependencies here and for the testing framework (the next call to target_compile_definitions)
+target_link_libraries (${EXECUTABLE_NAME} glad glfw imgui ${OpenCV_LIBS})
+
+# Compile the CUDA files separately. They can still be linked.
+set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+
+# Below is a template to add unit testing to your project with the Google testing framework
+# Refer to their documentation for more details: https://google.github.io/googletest/samples.html
+
+#  ------------------  Testing framework via GoogleTest  --------------------
+enable_testing()
+
+add_executable(
+  ${EXECUTABLE_NAME}_tests
+  # List test .cpp files here
+)
+
+target_link_libraries(
+  ${EXECUTABLE_NAME}_tests
+  GTest::gtest_main
+  glad glfw imgui ${OpenCV_LIBS} # again, list libraries to link here
+)
+
+target_compile_definitions(
+  ${EXECUTABLE_NAME}_tests
+  PUBLIC
+  ASSET_DIR="${PROJECT_SOURCE_DIR}/assets"
+)
+
+include(GoogleTest)
+gtest_discover_tests(${EXECUTABLE_NAME}_tests)
