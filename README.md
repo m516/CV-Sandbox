@@ -40,3 +40,24 @@ Here are all my projects so far:
 |         [OpenCV Video Template](src/09-OpenCV-Video-Template) | A template program for video analysis with OpenCV                                                                                                    |
 |         [Convolution Benchmark](src/10-Convolution-Benchmark) | A whole suite of eight janky matrix convolution implementations in C. Plus benchmark software to assess my incompetence!                             |
 |                                     [GL Game](src/11-GL_Game) | Recreating [a game](https://github.com/m516/WYSIWYG-2) to explore graphics programming with OpenGL                                                   |
+
+# Creating your Own Projects
+This project can be a template for your projects too. 
+
+To create a new project, make a new folder with all source code, and instructions to build the code into an executable in a CMakeLists.txt file. I tend to copy the project `01_Hello_World` because it's a minimal, buildable, runnable project with a window. Place this project in the *src* folder. No additional changes to the build scripts are necessary; the root-level build scripts search for subfolders of *src* with CMakeLists.txt and include them into the project. 
+
+All projects are folders under the main *src* folder like so:
+```
+src/
+  01_Hello_World/
+    CMakeLists.txt
+    sources.cpp
+    headers.hpp
+  02_Hello_GLFW/
+    CMakeLists.txt
+    sources.cpp
+    headers.hpp
+  ...
+```
+
+The root-level build scripts search for subfolders of *src* with CMakeLists.txt and include them into the project. 
