@@ -21,7 +21,7 @@ So far, all my projects are written in C++. This allows me to practice using sta
 |  [GLFW](https://www.glfw.org/) |                        Included in project [(Official instructions)](https://github.com/glfw/glfw#compiling-glfw)                         | [zlib license](extern/glfw/LICENSE)                                                | [yes](https://github.com/glfw/glfw)          |
 |                          ImGui |                                                   Included in project (static library)                                                    | [MIT License](extern/imgui/LICENSE)                                                | [yes](https://github.com/ocornut/imgui)      |
 
-Note that, though my source code is released under the [MIT license](LICENSE), cloning this repository may still bind you to the licenses of the libraries mentioned above.
+Note that, though my source code is released under the [MIT license](LICENSE), cloning this repository may still bind you to the licenses of the libraries listed above.
 
 
 # Projects
@@ -41,23 +41,30 @@ Here are all my projects so far:
 |         [Convolution Benchmark](src/10-Convolution-Benchmark) | A whole suite of eight janky matrix convolution implementations in C. Plus benchmark software to assess my incompetence!                             |
 |                                     [GL Game](src/11-GL_Game) | Recreating [a game](https://github.com/m516/WYSIWYG-2) to explore graphics programming with OpenGL                                                   |
 
-# Creating your Own Projects
+
+# Make it Yours
+
 This project can be a template for your projects too. 
 
-To create a new project, make a new folder with all source code, and instructions to build the code into an executable in a CMakeLists.txt file. I tend to copy the project `01_Hello_World` because it's a minimal, buildable, runnable project with a window. Place this project in the *src* folder. No additional changes to the build scripts are necessary; the root-level build scripts search for subfolders of *src* with CMakeLists.txt and include them into the project. 
-
-All projects are folders under the main *src* folder like so:
+Each project is a folder under [src/](/src/), which contains all source code for that project and a CMake script to build that code, as shown below and in the `src` folder:
 ```
 src/
-  01_Hello_World/
-    CMakeLists.txt
-    sources.cpp
-    headers.hpp
-  02_Hello_GLFW/
+  01_Hello_World/   <----+
+    CMakeLists.txt       |
+    sources.cpp          |  The Hello World project
+    headers.hpp          |__________________________
+  02_Hello_GLFW/    --------------------------------
     CMakeLists.txt
     sources.cpp
     headers.hpp
   ...
 ```
 
-The root-level build scripts search for subfolders of *src* with CMakeLists.txt and include them into the project. 
+The root-level build scripts search for subfolders of *src* with CMakeLists.txt and include them into the project, so no modifications to the other build scripts are necessary. 
+
+## Notes: 
+* A [template CMake file](/docs/CMakeLists-template.txt) is available. 
+* I personally tend to copy one of the first few projects because they're already minimal, buildable, runnable projects.
+* Don't set `EXECUTABLE_NAME` to be the same name in two different projects. CMake does not allow creating two executables with the same name.
+* `MEDIA_DIRECTORY` can be used to get the full path of the asset folder in all files of all projects. 
+  * WARNING: this is a C macro and is only recalculated during builds
